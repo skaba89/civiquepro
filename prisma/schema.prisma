@@ -1,9 +1,6 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -29,4 +26,82 @@ model Post {
   authorId  String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+// ============================================================
+// Veille IA - Surveillance des évolutions juridiques
+// ============================================================
+
+model LegalUpdate {
+  id          String   @id @default(cuid())
+  title       String
+  description String
+  source      String   // URL ou nom de la source
+  category    String   // "loi" | "circulaire" | "decret" | "gouvernement" | "jurisprudence" | "institutionnel"
+  status      String   @default("detected") // "detected" | "analyzed" | "applied" | "ignored"
+  impact      String   @default("medium")   // "low" | "medium" | "high" | "critical"
+  relevance   String   @default("pending")  // "pending" | "relevant" | "irrelevant"
+  aiAnalysis  String?  // Analyse IA du changement
+  searchDate  DateTime @default(now())
+  analyzedAt  DateTime?
+  appliedAt   DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  suggestions QuestionSuggestion[]
+}
+
+model QuestionSuggestion {
+  id            String   @id @default(cuid())
+  legalUpdateId String
+  legalUpdate   LegalUpdate @relation(fields: [legalUpdateId], references: [id], onDelete: Cascade)
+
+  action        String   // "add" | "modify" | "remove"
+  themeId       String   // ID du thème concerné
+  questionId    String?  // ID de la question existante (si modification/suppression)
+  
+  originalData  String?  // JSON de la question originale (si modification)
+  suggestedData String   // JSON de la nouvelle question suggérée
+  
+  reason        String   // Justification de la suggestion
+  status        String   @default("pending") // "pending" | "approved" | "rejected" | "auto_applied"
+  
+  approvedAt    DateTime?
+  rejectedAt    DateTime?
+  appliedAt     DateTime?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model GovernmentMember {
+  id        String   @id @default(cuid())
+  name      String
+  role      String   // "Président" | "Premier ministre" | "Ministre" | etc.
+  ministry  String?  // Ministère ou portefeuille
+  active    Boolean  @default(true)
+  source    String?  // Source de l'information
+  startDate DateTime?
+  endDate   DateTime?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model VeilleLog {
+  id          String   @id @default(cuid())
+  action      String   // "search" | "analyze" | "apply" | "government_update"
+  status      String   // "started" | "completed" | "error"
+  details     String?  // Détails ou message d'erreur
+  resultsCount Int     @default(0)
+  duration    Int      @default(0)  // Durée en ms
+  createdAt   DateTime @default(now())
+}
+
+model VeilleConfig {
+  id                String   @id @default(cuid())
+  key               String   @unique
+  value             String
+  description       String?
+  lastCheckedAt     DateTime?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
 }
