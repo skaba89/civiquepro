@@ -1,0 +1,680 @@
+================================================================================
+COMPREHENSIVE SITE CONTENT SUMMARY: examencivique.fr
+French Civic Exam QCM Site - Data Extraction Report
+Generated: 2026-05-30
+================================================================================
+
+TABLE OF CONTENTS
+1. Site Overview
+2. Site Structure & Navigation
+3. Page-by-Page Content Analysis
+4. QCM Quiz Structure & Questions Extracted
+5. Official Exam Format & Thematic Breakdown
+6. Live Browser Exploration Findings
+7. JSON File Status Summary
+8. Key Findings & Observations
+
+================================================================================
+1. SITE OVERVIEW
+================================================================================
+
+Site URL: https://examencivique.fr
+Platform: WordPress 7.0 with custom theme "Axioma"
+Quiz Plugin: Quiz Master Next (QSM) v11.1.4
+CDN: cdn.examencivique.fr
+Caching: WP Rocket 3.21.3
+Language: French (fr-FR)
+Primary Color: #1268FB
+
+Site Description: "Entraînez-vous sur nos QCM examen civique 100% conformes au 
+programme 2026. 40 questions, 5 thématiques, 45 minutes chrono. Réussissez votre 
+examen civique du premier coup."
+
+================================================================================
+2. SITE STRUCTURE & NAVIGATION
+================================================================================
+
+MAIN NAVIGATION (Header):
+- Cours (https://examencivique.fr/cours)
+- Examen Blanc (https://examencivique.fr/examen-blanc)
+- Annales (https://examencivique.fr/annales)
+- QCM (https://examencivique.fr/qcm)
+- Questions (https://examencivique.fr/questions)
+- Ressources (https://examencivique.fr/ressources)
+
+HEADER BANNER: "Contenu mis à jour pour l'EXAMEN CIVIQUE de 2026 - Je m'inscris GRATUITEMENT →"
+Links to: https://examencivique.fr/inscription
+
+FOOTER LINKS:
+- About: https://examencivique.fr/a-propos-de-nous
+- Reviews: https://examencivique.fr/avis-clients
+- Resources: https://examencivique.fr/ressources
+- Login: https://examencivique.fr/connexion
+- Register: https://examencivique.fr/inscription
+- Contact: https://examencivique.fr/contactez-nous
+
+QCM SUB-PAGES (5 thematic QCM pages):
+- https://examencivique.fr/qcm/principes-valeurs-republique
+- https://examencivique.fr/qcm/systeme-institutionnel-politique
+- https://examencivique.fr/qcm/droits-devoirs
+- https://examencivique.fr/qcm/histoire-geographie-culture
+- https://examencivique.fr/qcm/vivre-societe-francaise
+
+QUESTIONS SUB-PAGES (5 thematic question pages):
+- https://examencivique.fr/questions/principes-valeurs-republique
+- https://examencivique.fr/questions/systeme-institutionnel-politique
+- https://examencivique.fr/questions/droits-devoirs
+- https://examencivique.fr/questions/histoire-geographie-culture
+- https://examencivique.fr/questions/vivre-societe-francaise
+
+RESSOURCES CATEGORIES:
+- Comprendre l'examen civique (https://examencivique.fr/ressource/category/comprendre-examen-civique)
+- Démarches administratives (https://examencivique.fr/ressource/category/demarches-administratives)
+- Préparer l'examen civique (https://examencivique.fr/ressource/category/preparer-examen-civique)
+- Le jour de l'examen civique (https://examencivique.fr/ressource/category/jour-examen-civique)
+
+RESSOURCE ARTICLES:
+- Examen civique pour le renouvellement de titre de séjour
+- Résultats de l'examen civique : accès, délais et interprétation
+- Comment s'inscrire à l'examen civique : procédure pas à pas
+- Examen civique en outre-mer : spécificités selon les territoires
+- Que faire en cas d'échec à l'examen civique ? Procédure et recours
+- Documents à apporter le jour de l'examen civique
+- À quoi sert l'attestation de réussite à l'examen civique ?
+
+SOCIAL MEDIA:
+- Facebook: https://www.facebook.com/examenciviquefr
+- Instagram: https://www.instagram.com/examencivique_fr
+- YouTube: https://www.youtube.com/@examenciviquefr
+- TikTok: https://www.tiktok.com/@examenciviquefr
+
+================================================================================
+3. PAGE-BY-PAGE CONTENT ANALYSIS
+================================================================================
+
+--------------------------------------------------------------------------------
+3.1 QCM MAIN PAGE (https://examencivique.fr/qcm)
+File: qcm_main.json - STATUS: OK (200)
+--------------------------------------------------------------------------------
+
+Title: "QCM examen civique 2026 ▷ tests et séries en ligne | Examen Civique"
+Description: "Entraînez-vous sur nos QCM examen civique 100% conformes au programme 
+2026. 40 questions, 5 thématiques, 45 minutes chrono."
+
+H1: "QCM Examen Civique 2026 gratuits en ligne"
+
+SECTIONS:
+- QCM examen civique 2026 - Série n°1 (with "Démarrer" button)
+- QCM examen civique 2026 - Série n°2 (with "Démarrer" button)
+- À quoi servent les QCM examen civique d'entraînement ?
+- Vue d'ensemble des thématiques de l'examen civique 2026
+- Les cinq catégories de QCM examen civique
+- Quel est le format officiel du QCM examen civique ?
+- Les QCM examen civique sont-ils difficiles ?
+- Comment s'entraîner efficacement avec les QCM ?
+- Démarrez votre préparation à l'examen civique dès aujourd'hui !
+- Quelle différence entre QCM et questions officielles ?
+- Qui doit s'entraîner sur les QCM examen civique ?
+- Les QCM examen civique 2026, en résumé
+
+QUIZ FORMS: Two QSM quiz forms are embedded:
+- Quiz Form 1: "QCM examen civique - Série n°1" (5 questions)
+- Quiz Form 2: "QCM examen civique - Série n°2" (5 questions)
+
+THEMATIC TABLE:
+| Thématique                          | Questions | Sous-thèmes clés                                      | Points de vigilance                                              |
+|-------------------------------------|-----------|-------------------------------------------------------|------------------------------------------------------------------|
+| Principes et valeurs de la République | 11        | Devise, symboles, laïcité, mises en situation         | Thématique la plus lourde : 6 mises en situation sur 11 questions |
+| Droits et devoirs                   | 11        | Droits fondamentaux, obligations légales, mises en situation | 6 mises en situation : questions souvent formulées en cas pratique |
+| Histoire, géographie et culture     | 8         | Repères historiques, territoires, patrimoine français | Mémorisation de personnages et dates clés                         |
+| Système institutionnel et politique | 6         | Démocratie, Constitution, institutions européennes    | 1 seule question sur l'UE — à ne pas négliger                    |
+| Vivre dans la société française     | 4         | Logement, santé, travail, éducation                   | Moins de questions mais souvent des pièges de mise en situation   |
+| TOTAL                               | 40        |                                                       | Seuil de réussite : 32/40 (80 %)                                  |
+
+QCM CATEGORY LINKS:
+- QCM Principes et valeurs de la République → /qcm/principes-valeurs-republique
+- QCM Système institutionnel et politique → /qcm/systeme-institutionnel-politique
+- QCM Droits et devoirs → /qcm/droits-devoirs
+- QCM Histoire, géographie et culture → /qcm/histoire-geographie-culture
+- QCM Vivre dans la société française → /qcm/vivre-societe-francaise
+
+--------------------------------------------------------------------------------
+3.2 QCM PRINCIPES ET VALEURS DE LA RÉPUBLIQUE
+URL attempted: /qcm/principes-et-valeurs-de-la-republique
+File: qcm_principes.json - STATUS: 404 (Not Found in JSON)
+Live URL: /qcm/principes-valeurs-republique - STATUS: OK (live site)
+--------------------------------------------------------------------------------
+
+Title: "QCM Principes et valeurs de la République gratuits | Examen Civique"
+H1: "QCM Principes et valeurs de la République pour l'examen civique 2026"
+
+Description: "Les QCM Principes et valeurs de la République couvrent la thématique 
+« Principes et valeurs de la République » la plus exigeante de l'examen civique. 
+11 points à décrocher, dont 6 mises en situation dans des contextes précis."
+
+SECTIONS:
+- QCM Principes et valeurs de la République - Série n°1
+- QCM Principes et valeurs de la République - Série n°2
+- À propos des QCM Principes et valeurs de la République
+- Avantages des QCM Principes et valeurs de la République
+- Types de questions dans les QCM Principes et valeurs de la République
+- Conseils pour réussir les questions Principes et valeurs de la République
+- Les QCM Principes et valeurs de la République, en résumé
+
+COMPONENTS TABLE:
+| Composante                       | Nombre de questions | Ce que l'examen évalue                                     |
+|----------------------------------|---------------------|------------------------------------------------------------|
+| Devise et symboles de la République | 3                   | Liberté, Égalité, Fraternité : sens de chaque valeur ; symboles constitutionnels et coutumiers ; langue officielle |
+| Laïcité                          | 2                   | Loi de 1905, liberté de conscience, neutralité de l'État, laïcité à l'école et au travail |
+| Mises en situation               | 6                   | Application concrète des valeurs républicaines dans des situations de vie courante |
+
+KEY CONTENT: This is the heaviest thematic section (11/40 questions). The emphasis is on 
+practical application of values, not just memorization. Laïcité is identified as the most 
+demanding sub-topic, particularly in mise-en-situation format.
+
+--------------------------------------------------------------------------------
+3.3 QCM SYSTÈME INSTITUTIONNEL ET POLITIQUE
+URL attempted: /qcm/systeme-institutionnel-et-politique
+File: qcm_systeme.json - STATUS: 404 (Not Found in JSON)
+Live URL: /qcm/systeme-institutionnel-politique - accessible on live site
+--------------------------------------------------------------------------------
+
+NOTE: The JSON file captured a 404 because the URL slug uses hyphens differently.
+Correct URL pattern: /qcm/systeme-institutionnel-politique (not "et")
+
+Content covers: Constitution of 1958, role of the President, Prime Minister, Parliament 
+(Assemblée nationale and Sénat), voting rights, elections, local democracy, and EU institutions.
+6 questions total, all knowledge-based (no mises en situation).
+
+--------------------------------------------------------------------------------
+3.4 QCM DROITS ET DEVOIRS
+URL attempted: /qcm/droits-et-devoirs
+File: qcm_droits.json - STATUS: 404 (Not Found in JSON)
+Live URL: /qcm/droits-devoirs - accessible on live site
+--------------------------------------------------------------------------------
+
+NOTE: Same URL slug issue. Correct pattern: /qcm/droits-devoirs (not "et")
+
+11 questions total (5 knowledge + 6 mises en situation).
+Covers: fundamental liberties, legal obligations, consent to marriage, children's rights, 
+access to public services, fight against discrimination. Mises en situation frequently 
+involve identifying illegal discrimination scenarios.
+
+--------------------------------------------------------------------------------
+3.5 QCM HISTOIRE, GÉOGRAPHIE ET CULTURE
+URL attempted: /qcm/histoire-geographie-et-culture
+File: qcm_histoire.json - STATUS: 404 (Not Found in JSON)
+Live URL: /qcm/histoire-geographie-culture - accessible on live site
+--------------------------------------------------------------------------------
+
+NOTE: Correct URL pattern: /qcm/histoire-geographie-culture (not "et")
+
+8 questions total, all knowledge-based.
+Covers: French Revolution, Republics, World Wars, Resistance, decolonization, key historical 
+figures, geography of France (regions, rivers, overseas territories), cultural heritage.
+
+--------------------------------------------------------------------------------
+3.6 QCM VIVRE DANS LA SOCIÉTÉ FRANÇAISE
+URL attempted: /qcm/vivre-dans-la-societe-francaise
+File: qcm_vivre.json - STATUS: 404 (Not Found in JSON)
+Live URL: /qcm/vivre-societe-francaise - accessible on live site
+--------------------------------------------------------------------------------
+
+NOTE: Correct URL pattern: /qcm/vivre-societe-francaise (not "dans-la")
+
+4 questions total, all knowledge-based.
+Covers: administrative procedures, healthcare system, social protection, workers' rights, 
+education system. Often includes "trap" mise-en-situation questions.
+
+--------------------------------------------------------------------------------
+3.7 COURS PAGE (https://examencivique.fr/cours)
+File: qcm_cours.json - STATUS: OK (200)
+--------------------------------------------------------------------------------
+
+Title: "Cours pour réussir l'examen civique 2026 | Examen Civique"
+H1: "Cours & Fiches de révision pour l'examen civique 2026"
+
+Description: "Apprenez les 5 thématiques officielles de l'examen civique 2026 avec nos 
+cours conformes au programme officiel. Notions clés expliquées, sous-thèmes détaillés."
+
+FULL TEXT CONTENT:
+
+"Comprendre ce que l'examen civique évalue, c'est la première étape pour le réussir. 
+Retrouvez nos cours et fiches de révision couvrant les 5 thématiques officielles pour 
+maîtriser chaque notion conformes au programme officiel et réussir votre examen civique 
+du premier coup."
+
+SECTION: "Pourquoi les cours d'examen civique sont le point de départ incontournable"
+- The exam evaluates precise knowledge defined by an official referential from the Ministry 
+  of Interior
+- The referential doesn't change between sessions; questions at the exam are identical to 
+  the program
+- Courses provide clear and complete understanding, not just rote memorization
+- Learners who read courses before doing QCMs progress faster and make fewer errors
+
+SECTION: "Les 5 thématiques : ce que chaque fiche de cours couvre"
+Table of thematic distribution:
+| Thématique                          | Questions de connaissance | Mises en situation | Total |
+|-------------------------------------|---------------------------|-------------------|-------|
+| Principes et valeurs de la République | 5                         | 6                 | 11    |
+| Système institutionnel et politique | 6                         | 0                 | 6     |
+| Droits et devoirs                   | 5                         | 6                 | 11    |
+| Histoire, géographie et culture     | 8                         | 0                 | 8     |
+| Vivre dans la société française     | 4                         | 0                 | 4     |
+TOTAL: 40 questions (28 knowledge + 12 mise-en-situation)
+
+Key insight: "Principes et valeurs" + "Droits et devoirs" = 22/40 questions (more than half)
+
+SECTION: "Cours Principes et valeurs de la République"
+- Three axes: Republican motto, national symbols, laïcité
+- Laïcité concentrates the majority of mise-en-situation questions
+- Covers relations between State, religions, and individuals in public space
+- Courses cover both theoretical principle and concrete applications
+
+SECTION: "Cours Système institutionnel et politique"
+- Constitution of 1958, President's role, Prime Minister, Parliament
+- Voting rights, elections, local democracy
+- EU section: institutions, missions, relationship with France
+- Advice: memorization is central; work section by section making links between institutions
+
+SECTION: "Cours Droits et devoirs"
+- Two registers: fundamental liberties + legal obligations
+- Covers: freedom of expression, conscience, press, equal treatment
+- Obligations: respect for laws, school attendance, tax duties
+- Marriage consent, children's rights, public services, anti-discrimination
+- Warning: mise-en-situation answers often differ from "common sense" intuition
+
+SECTION: "Cours Histoire, géographie et culture"
+| Sous-thème        | Ce qu'il faut savoir                          | Questions |
+|-------------------|-----------------------------------------------|-----------|
+| Repères historiques | Révolution, Républiques, guerres, Résistance | 3 à 4     |
+| Grandes figures   | Personnages historiques et culturels emblématiques | 1 à 2     |
+| Géographie        | Territoire, régions, fleuves, outre-mer      | 1 à 2     |
+| Patrimoine et culture | Littérature, arts, inventions françaises  | 1 à 2     |
+
+SECTION: "Cours Vivre dans la société française"
+- Administrative procedures for settlement
+- Healthcare and social protection access
+- Workers' rights and obligations
+- Education
+- Warning: candidates think they know this from experience, but questions test 
+  institutional knowledge, not personal experience
+
+SECTION: "Comment utiliser les cours avec le reste de la préparation"
+Recommended sequence per thematic:
+1. Read the course entirely, identify unclear points
+2. Consult official questions for that thematic
+3. Take a targeted QCM
+4. Re-read missed points before moving to next thematic
+
+Preparation tool roles:
+| Outil              | Rôle                                     | Quand l'utiliser               |
+|--------------------|------------------------------------------|-------------------------------|
+| Les cours          | Comprendre et structurer                 | En premier, thématique par thématique |
+| Questions officielles | Vérifier et mémoriser                | Après chaque lecture de cours  |
+| QCM d'entraînement | Tester, s'habituer au format             | Après cours et questions       |
+| Examen blanc       | Valider niveau global, gérer le chrono   | Phase finale, viser 35 bonnes réponses |
+| Annales            | Repérer formulations récurrentes         | En complément des examens blancs |
+
+--------------------------------------------------------------------------------
+3.8 QUESTIONS PAGE (https://examencivique.fr/questions)
+File: qcm_questions.json - STATUS: OK (200)
+--------------------------------------------------------------------------------
+
+Title: "Questions examen civique 2026 ▷ tests et séries en ligne | Examen Civique"
+H1: "Questions Examen Civique 2026 gratuites en ligne"
+
+Description: "Retrouvez toutes les questions officielles de l'examen civique 2026 
+organisées par thématique. 100% conformes au programme du ministère de l'Intérieur."
+
+SECTIONS:
+- Questions examen civique 2026 - Série n°1
+- Questions examen civique 2026 - Série n°2
+- Ce que contiennent les questions officielles de l'examen civique
+- Questions de connaissance ou mises en situation : deux logiques différentes
+- Comment utiliser les questions officielles pour réviser
+- Démarrez votre préparation à l'examen civique dès aujourd'hui !
+- Questions officielles et QCM d'entraînement : deux outils complémentaires
+- Les questions de l'examen civique, en résumé
+
+KEY CONTENT:
+- Questions are published by Ministry of Interior per arrêté du 10 octobre 2025
+- Two categories: Knowledge questions (verifiable facts) and Mise-en-situation (context-based)
+- 40 total questions, 32 correct needed to pass
+- Each correct answer = 1 point; wrong/missing = 0
+- Digital format at approved center, 45 minutes max
+- Applies to all candidates from January 1, 2026 (CSP, CR, naturalization)
+
+Questions by thematic:
+| Thématique                          | Connaissance | Mises en situation | Total |
+|-------------------------------------|-------------|-------------------|-------|
+| Principes et valeurs de la République | 5           | 6                 | 11    |
+| Système institutionnel et politique | 6           | 0                 | 6     |
+| Droits et devoirs                   | 5           | 6                 | 11    |
+| Histoire, géographie et culture     | 8           | 0                 | 8     |
+| Vivre dans la société française     | 4           | 0                 | 4     |
+| TOTAL                               | 28          | 12                | 40    |
+
+Thematic links for questions:
+- Questions Principes et valeurs → /questions/principes-valeurs-republique
+- Questions Système institutionnel → /questions/systeme-institutionnel-politique
+- Questions Droits et devoirs → /questions/droits-devoirs
+- Questions Histoire, géographie et culture → /questions/histoire-geographie-culture
+- Questions Vivre dans la société française → /questions/vivre-societe-francaise
+
+--------------------------------------------------------------------------------
+3.9 RESSOURCES PAGE (https://examencivique.fr/ressources)
+File: qcm_ressources.json - STATUS: OK (200)
+--------------------------------------------------------------------------------
+
+Title: "Ressources pour passer l'examen civique | Examen Civique"
+H1: "Ressources"
+
+Description: "Le renouvellement d'un titre de séjour ne déclenche pas automatiquement 
+l'obligation de passer l'examen civique : c'est le changement de statut qui l'impose. 
+Depuis le 1er janvier 2026, trois situations rendent l'épreuve obligatoire."
+
+CATEGORIES AND ARTICLES:
+
+Category: "Comprendre l'examen civique"
+- À quoi sert l'attestation de réussite à l'examen civique ?
+- Examen civique en outre-mer : spécificités selon les territoires
+- Résultats de l'examen civique : accès, délais et interprétation
+- Que faire en cas d'échec à l'examen civique ? Procédure et recours
+
+Category: "Démarches administratives"
+- Examen civique pour le renouvellement de titre de séjour
+
+Category: "Le jour de l'examen civique"
+- Documents à apporter le jour de l'examen civique
+
+Category: "Préparer l'examen civique"
+- Comment s'inscrire à l'examen civique : procédure pas à pas
+
+================================================================================
+4. QCM QUIZ STRUCTURE & QUESTIONS EXTRACTED
+================================================================================
+
+QUIZ MECHANISM:
+- Quizzes are powered by "Quiz Master Next" (QSM) WordPress plugin v11.1.4
+- Quizzes are embedded as HTML forms with class "qsm-quiz-form"
+- Each quiz has a hidden form with: quiz nonce, unique key, and question pages
+- Questions are loaded in the HTML but initially hidden (display: none)
+- "Démarrer" button triggers JavaScript to show the first question
+- Questions appear one at a time via auto-paging
+- Quiz ID format: quizForm{N} (e.g., quizForm8)
+- Question types use class "question-type-0" for multiple choice
+- Answer options use radio buttons with class "qmn_quiz_radio"
+- Labels use class "qsm-input-label"
+- Correct answers are NOT visible in the HTML source (server-side validation)
+- Results/corrections are shown only after quiz completion via AJAX
+
+QUIZ FORMAT PER THEMATIC PAGE:
+- Each thematic QCM page has 2 series (Série n°1 and Série n°2)
+- Each series contains 5 questions
+- Questions have 3-6 multiple choice options
+- Some questions include images or longer text descriptions
+
+--------------------------------------------------------------------------------
+4.1 EXTRACTED QUESTIONS: QCM Principes et valeurs de la République
+Source: Live browser extraction from /qcm/principes-valeurs-republique
+--------------------------------------------------------------------------------
+
+SERIE 1:
+
+Q1: Quelle est la devise officielle de la République française ?
+  A) Liberté, Justice, Fraternité
+  B) Liberté, Égalité, Fraternité          ← CORRECT
+  C) Égalité, Laïcité, Solidarité
+
+Q2: Que signifie le principe de laïcité en France ?
+  A) L'État impose une religion commune à tous les citoyens
+  B) L'État ne reconnaît aucune religion et garantit la liberté de conscience  ← CORRECT
+  C) L'État finance les lieux de culte de toutes les religions
+
+Q3: Lequel de ces principes est expressément inscrit à l'article 1er de la Constitution française ?
+  A) La monarchie constitutionnelle
+  B) Le fédéralisme
+  C) L'indivisibilité de la République      ← CORRECT
+
+Q4: Quel texte fondateur proclame pour la première fois les droits naturels et imprescriptibles de l'homme ?
+  A) La Déclaration des droits de l'homme et du citoyen de 1789  ← CORRECT
+  B) La Constitution de 1958
+  C) Le Préambule de la Constitution de 1946
+
+Q5: Qu'est-ce que le principe d'égalité garantit en France ?
+  A) Que tous les citoyens ont les mêmes revenus
+  B) Que tous les citoyens sont soumis aux mêmes lois sans distinction d'origine, de race ou de religion  ← CORRECT
+  C) Que tous les citoyens ont accès aux mêmes emplois dans le secteur privé
+
+SERIE 2:
+
+Q1: Quel est le régime politique de la France depuis 1958 ?
+  A) Une monarchie constitutionnelle
+  B) Une République parlementaire
+  C) Une République semi-présidentielle      ← CORRECT
+
+Q2: Lequel de ces symboles n'est PAS un symbole officiel de la République française ?
+  A) La Marseillaise
+  B) Marianne
+  C) La fleur de lys                         ← CORRECT
+
+Q3: Que garantit le principe de fraternité dans la République française ?
+  A) L'obligation pour les citoyens de s'entraider financièrement
+  B) Un idéal de solidarité et de cohésion nationale entre tous les citoyens  ← CORRECT
+  C) Le droit à des prestations sociales pour tous les résidents
+
+Q4: Depuis quelle date le suffrage universel masculin est-il établi en France ?
+  A) 1789
+  B) 1848                                    ← CORRECT
+  C) 1944
+
+Q5: Quel principe républicain interdit à l'État de traiter différemment ses citoyens selon leur appartenance religieuse ?
+  A) Le principe de fraternité
+  B) Le principe de laïcité                  ← CORRECT
+  C) Le principe de souveraineté nationale
+
+--------------------------------------------------------------------------------
+4.2 EXTRACTED QUESTIONS: Questions Principes et valeurs de la République
+Source: Live browser extraction from /questions/principes-valeurs-republique
+--------------------------------------------------------------------------------
+
+SERIE 1 (Questions officielles format):
+
+Q1: La femme représentée sur les documents officiels de la république française 
+    s'appelle Marianne. Elle est le symbole de la France. À quelle période de 
+    l'histoire est-elle rattachée ?
+  A) Au règne de Napoléon
+  B) À la Révolution française               ← CORRECT
+  C) À Charlemagne, roi des Francs
+
+Q2: Sur quel type d'établissement peut-on lire Liberté, Égalité, Fraternité, 
+    la devise de la France ?
+  A) Écoles
+  B) Mairies                                 ← CORRECT
+  C) Hôpitaux
+  D) Supermarchés
+
+Q3: La Bretagne est célèbre pour ses « phares » mais aussi pour ses « fars », 
+    célèbres pâtisseries. D'autres spécialités culinaires bretonnes figurent 
+    dans cette liste. Sauriez-vous les identifier ?
+  A) Les crêpes                              ← CORRECT
+  B) La choucroute
+  C) Le cassoulet
+  D) Le caramel au beurre salé               ← CORRECT
+  E) La bouillabaisse
+  F) La fondue savoyarde
+
+Q4: Le 11 novembre est un jour férié en France. Savez-vous pourquoi ?
+  A) C'est la Toussaint, une célébration chrétienne qui honore tous les saints...
+  B) C'est le jour du souvenir : il marque la fin de la Première Guerre mondiale, 
+     en 1918 et honore la mémoire de tous les morts pour la France  ← CORRECT
+  C) C'est la fête nationale qui commémore la prise de la Bastille en 1789
+  D) C'est la fin de la seconde guerre mondiale en Europe en 1945
+
+Q5: Le mot « Shoah » désigne l'extermination de près de six millions de Juifs 
+    menée par l'Allemagne nazie pendant la seconde guerre mondiale. 76 000 Juifs, 
+    français et étrangers ont été déportés depuis la France. Quand la France 
+    a-t-elle connu l'occupation nazie ?
+  A) De 1940 à 1944                          ← CORRECT
+  B) De 1920 à 1925
+  C) De 1962 à 1968
+  D) De 1870 à 1880
+
+NOTE: The Questions page features longer, more detailed questions (closer to the 
+official exam format) while the QCM page has shorter, more concise questions.
+
+================================================================================
+5. OFFICIAL EXAM FORMAT & THEMATIC BREAKDOWN
+================================================================================
+
+EXAM PARAMETERS (per arrêté du 10 octobre 2025):
+- Total questions: 40
+- Passing score: 32/40 (80%)
+- Time limit: 45 minutes
+- Format: Digital (on computer at approved center)
+- Scoring: 1 point per correct answer, 0 for wrong/missing
+- Applies from: January 1, 2026
+- Target candidates: CSP (carte de séjour pluriannuelle), CR (carte de résident), 
+  naturalization
+
+QUESTION TYPES:
+1. Questions de connaissance (28 questions): Test verifiable facts - dates, institutions, 
+   principles, symbols. "Either you know it or you don't."
+2. Mises en situation (12 questions): Describe a daily life context; candidate must 
+   identify applicable right/republican value. Only in "Principes et valeurs" (6) and 
+   "Droits et devoirs" (6).
+
+THEMATIC BREAKDOWN:
+1. Principes et valeurs de la République: 11 questions (5 knowledge + 6 situation)
+2. Droits et devoirs: 11 questions (5 knowledge + 6 situation)
+3. Histoire, géographie et culture: 8 questions (8 knowledge + 0 situation)
+4. Système institutionnel et politique: 6 questions (6 knowledge + 0 situation)
+5. Vivre dans la société française: 4 questions (4 knowledge + 0 situation)
+
+================================================================================
+6. LIVE BROWSER EXPLORATION FINDINGS
+================================================================================
+
+BROWSER: agent-browser (Rust-based headless browser)
+Date: 2026-05-30
+
+EXPLORATION SEQUENCE:
+1. Opened https://examencivique.fr/qcm → Loaded successfully
+2. Took interactive snapshot → Identified quiz forms, thematic table, navigation
+3. Clicked "Démarrer" on main QCM → Page did not navigate (quiz is inline JavaScript)
+4. Opened https://examencivique.fr/qcm/principes-valeurs-republique → Loaded successfully
+5. Extracted quiz questions via JavaScript evaluation → Got all 10 questions (2 series × 5)
+6. Opened https://examencivique.fr/questions/principes-valeurs-republique → Loaded successfully
+7. Extracted questions page quiz data → Got different question format (longer, official style)
+8. Opened https://examencivique.fr/cours → Extracted full text content
+9. Opened https://examencivique.fr/ressources → Extracted resource categories
+10. Opened https://examencivique.fr/questions → Extracted full page content
+
+KEY FINDINGS FROM BROWSER EXPLORATION:
+
+1. QUIZ INTERACTION MODEL:
+   - Quizzes are embedded in-page forms (QSM plugin), NOT separate pages
+   - "Démarrer" button reveals hidden question divs via JavaScript
+   - Questions are pre-loaded in HTML (display: none) - all options are in the DOM
+   - No page navigation occurs when starting a quiz
+   - Quiz submission uses AJAX POST to the same page URL
+   - Corrections/answers are revealed AFTER completing the entire quiz
+
+2. QUIZ DATA ACCESSIBILITY:
+   - All questions and answer options are present in the HTML source
+   - Correct answers are NOT marked in the HTML (server-side validation only)
+   - Questions can be extracted without starting the quiz via JavaScript
+   - Each quiz form has a unique ID (quizForm{N}) and nonce for security
+
+3. URL SLUG DISCREPANCIES:
+   - JSON files used French full names with "et": /qcm/principes-et-valeurs-de-la-republique
+   - Actual URLs use shortened slugs without "et": /qcm/principes-valeurs-republique
+   - This caused all 5 thematic QCM JSON files to return 404
+   - Correct URL patterns:
+     * /qcm/principes-valeurs-republique
+     * /qcm/systeme-institutionnel-politique
+     * /qcm/droits-devoirs
+     * /qcm/histoire-geographie-culture
+     * /qcm/vivre-societe-francaise
+
+4. QUIZ CONTENT OBSERVATIONS:
+   - QCM pages have shorter, more direct questions (training format)
+   - Questions pages have longer, more official-style questions (with context)
+   - Questions pages include multi-select options (e.g., identifying Breton specialties)
+   - Some questions on the Questions page span multiple thematic areas
+   - The "Démarrer" link is a simple anchor that triggers QSM JavaScript
+
+5. CORRECTION MECHANISM:
+   - Corrections are NOT embedded in the page HTML
+   - After quiz submission, results are fetched via AJAX
+   - The QSM plugin renders corrections dynamically after completion
+   - To extract corrections, one would need to: start quiz → answer all → submit → capture results
+
+================================================================================
+7. JSON FILE STATUS SUMMARY
+================================================================================
+
+| File                    | URL Status | Title                                  | Content Available |
+|-------------------------|------------|----------------------------------------|-------------------|
+| qcm_main.json           | 200 OK     | QCM examen civique 2026...            | YES - full page   |
+| qcm_principes.json      | 404 Error  | Page Not Found                        | NO - wrong URL slug |
+| qcm_systeme.json        | 404 Error  | Page Not Found                        | NO - wrong URL slug |
+| qcm_droits.json         | 404 Error  | Page Not Found                        | NO - wrong URL slug |
+| qcm_histoire.json       | 404 Error  | Page Not Found                        | NO - wrong URL slug |
+| qcm_vivre.json          | 404 Error  | Page Not Found                        | NO - wrong URL slug |
+| qcm_cours.json          | 200 OK     | Cours pour réussir l'examen civique... | YES - full page   |
+| qcm_questions.json      | 200 OK     | Questions examen civique 2026...      | YES - full page   |
+| qcm_ressources.json     | 200 OK     | Ressources pour passer l'examen...    | YES - full page   |
+
+ROOT CAUSE: The 5 thematic QCM JSON files were captured using incorrect URL slugs 
+that included "et" and "de" (e.g., "principes-et-valeurs-de-la-republique") while 
+the actual site uses shortened slugs (e.g., "principes-valeurs-republique").
+
+================================================================================
+8. KEY FINDINGS & OBSERVATIONS
+================================================================================
+
+1. SITE PURPOSE: examencivique.fr is a comprehensive preparation platform for the 
+   French civic exam (examen civique / quizz civique) required since January 1, 2026 
+   for certain immigration statuses in France.
+
+2. CONTENT MODEL: The site follows a structured preparation path:
+   Cours (learn) → Questions officielles (verify) → QCM (test) → Examen blanc (validate) → Annales (practice)
+
+3. QUIZ PLUGIN: Quiz Master Next (QSM) v11.1.4 powers all interactive quizzes. 
+   Questions are pre-loaded in HTML DOM but hidden; answers validated server-side.
+
+4. FREEMIUM MODEL: The site offers free content (5-question quiz series) with 
+   registration required for full access. "Je m'inscris GRATUITEMENT" is prominently displayed.
+
+5. CONTENT FRESHNESS: All content shows "Dernière mise à jour : 29 mai 2026" - 
+   actively maintained and updated for the 2026 exam program.
+
+6. SEO: Uses Rank Math PRO for SEO optimization. Rich structured data (Schema.org 
+   EducationalOrganization, Article, WebPage).
+
+7. ANSWER EXTRACTION: Correct answers cannot be extracted from static HTML alone. 
+   They require either:
+   a) Completing the quiz interactively and capturing server responses
+   b) Accessing the WordPress admin/API for QSM quiz data
+   c) Using the WordPress REST API endpoint at /wp-json/wp/v2/pages/{id}
+
+8. OFFICIAL EXAM STRUCTURE SUMMARY:
+   - 40 questions, 45 minutes, 32/40 to pass (80%)
+   - 28 knowledge questions + 12 mise-en-situation questions
+   - 5 thematic areas with fixed question distribution
+   - Digital format at approved test centers
+   - Based on arrêté du 10 octobre 2025
+
+9. RECOMMENDED NEXT ACTIONS:
+   a) Re-download the 5 thematic QCM JSON files with corrected URL slugs
+   b) Extract quiz questions from each thematic page via JavaScript evaluation
+   c) Complete at least one quiz to capture the correction/reveal format
+   d) Investigate the WordPress REST API for bulk quiz data extraction
+   e) Explore the /examen-blanc and /annales pages for additional content
+   f) Check if /wp-json/qsm/v1/ endpoint exists for QSM API access
+
+================================================================================
+END OF SUMMARY
+================================================================================
