@@ -9,10 +9,16 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Separator } from "@/components/ui/separator";
+import { MockOAuthDialog } from "@/components/auth/mock-oauth-dialog";
 import {
   Mail, Lock, Eye, EyeOff, Loader2, AlertCircle, CheckCircle2,
   ArrowRight, Trophy, BookOpen, Clock, CheckCircle, Users,
 } from "lucide-react";
+
+interface ProviderStatus {
+  google: boolean;
+  facebook: boolean;
+}
 
 export default function LoginPage() {
   const router = useRouter();
@@ -23,6 +29,8 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [providerStatus, setProviderStatus] = useState<ProviderStatus>({ google: false, facebook: false });
+  const [mockDialogProvider, setMockDialogProvider] = useState<"google" | "facebook" | null>(null);
 
   // Check if already logged in
   useEffect(() => {
@@ -33,6 +41,14 @@ export default function LoginPage() {
       }
     });
   }, [router]);
+
+  // Check which OAuth providers are configured
+  useEffect(() => {
+    fetch("/api/auth/providers-status")
+      .then((res) => res.json())
+      .then((data) => setProviderStatus(data))
+      .catch(() => {});
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -53,7 +69,6 @@ export default function LoginPage() {
       });
 
       if (result?.error) {
-        // Map common NextAuth errors to French messages
         const errorMessages: Record<string, string> = {
           "CredentialsSignin": "Email ou mot de passe incorrect",
           "SessionRequired": "Veuillez vous connecter pour continuer",
@@ -63,12 +78,10 @@ export default function LoginPage() {
         setLoading(false);
       } else if (result?.ok) {
         setSuccess("Connexion réussie ! Redirection...");
-        // Force a hard refresh to update the session
         setTimeout(() => {
           window.location.href = "/";
         }, 800);
       } else {
-        // result is undefined or null - unexpected
         setError("Erreur inattendue. Veuillez réessayer.");
         setLoading(false);
       }
@@ -81,21 +94,33 @@ export default function LoginPage() {
 
   const handleGoogleLogin = async () => {
     setError("");
-    try {
-      await signIn("google", { callbackUrl: "/" });
-    } catch (err) {
-      console.error("Google login error:", err);
-      setError("Erreur lors de la connexion Google");
+    if (providerStatus.google) {
+      // Real Google OAuth
+      try {
+        await signIn("google", { callbackUrl: "/" });
+      } catch (err) {
+        console.error("Google login error:", err);
+        setError("Erreur lors de la connexion Google");
+      }
+    } else {
+      // Mock Google OAuth
+      setMockDialogProvider("google");
     }
   };
 
   const handleFacebookLogin = async () => {
     setError("");
-    try {
-      await signIn("facebook", { callbackUrl: "/" });
-    } catch (err) {
-      console.error("Facebook login error:", err);
-      setError("Erreur lors de la connexion Facebook");
+    if (providerStatus.facebook) {
+      // Real Facebook OAuth
+      try {
+        await signIn("facebook", { callbackUrl: "/" });
+      } catch (err) {
+        console.error("Facebook login error:", err);
+        setError("Erreur lors de la connexion Facebook");
+      }
+    } else {
+      // Mock Facebook OAuth
+      setMockDialogProvider("facebook");
     }
   };
 
@@ -218,6 +243,9 @@ export default function LoginPage() {
                 <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
               </svg>
               Continuer avec Google
+              {!providerStatus.google && (
+                <span className="ml-1 text-xs text-gray-400">(démo)</span>
+              )}
             </Button>
             <Button
               type="button"
@@ -230,6 +258,9 @@ export default function LoginPage() {
                 <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
               </svg>
               Continuer avec Facebook
+              {!providerStatus.facebook && (
+                <span className="ml-1 text-xs text-blue-200">(démo)</span>
+              )}
             </Button>
           </div>
 
@@ -343,6 +374,18 @@ export default function LoginPage() {
           </div>
         </div>
       </div>
+
+      {/* Mock OAuth Dialog */}
+      <MockOAuthDialog
+        provider="google"
+        isOpen={mockDialogProvider === "google"}
+        onClose={() => setMockDialogProvider(null)}
+      />
+      <MockOAuthDialog
+        provider="facebook"
+        isOpen={mockDialogProvider === "facebook"}
+        onClose={() => setMockDialogProvider(null)}
+      />
     </div>
   );
 }

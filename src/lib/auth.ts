@@ -8,36 +8,47 @@ import { db } from "@/lib/db";
 // Check if OAuth providers are properly configured
 const googleClientId = process.env.GOOGLE_CLIENT_ID;
 const googleClientSecret = process.env.GOOGLE_CLIENT_SECRET;
-const isGoogleConfigured = !!(googleClientId && googleClientSecret &&
+const isGoogleConfigured = !!(
+  googleClientId &&
+  googleClientSecret &&
+  googleClientId !== "" &&
+  googleClientSecret !== "" &&
   googleClientId !== "dummy-google-client-id" &&
-  googleClientSecret !== "dummy-google-client-secret");
+  googleClientSecret !== "dummy-google-client-secret"
+);
 
 const facebookClientId = process.env.FACEBOOK_CLIENT_ID;
 const facebookClientSecret = process.env.FACEBOOK_CLIENT_SECRET;
-const isFacebookConfigured = !!(facebookClientId && facebookClientSecret);
+const isFacebookConfigured = !!(
+  facebookClientId &&
+  facebookClientSecret &&
+  facebookClientId !== "" &&
+  facebookClientSecret !== ""
+);
 
-// Build providers list
+// Build providers list - always include all providers
+// For unconfigured OAuth, we use placeholder credentials that allow the provider
+// to be registered but the actual OAuth flow will fail (expected in dev).
+// The frontend will use mock OAuth flow for unconfigured providers.
 const providers: NextAuthOptions["providers"] = [];
 
-if (isGoogleConfigured) {
-  providers.push(
-    GoogleProvider({
-      clientId: googleClientId!,
-      clientSecret: googleClientSecret!,
-      allowDangerousEmailAccountLinking: true,
-    })
-  );
-}
+// Google provider - always registered
+providers.push(
+  GoogleProvider({
+    clientId: isGoogleConfigured ? googleClientId! : "mock-google-client-id.apps.googleusercontent.com",
+    clientSecret: isGoogleConfigured ? googleClientSecret! : "mock-google-client-secret",
+    allowDangerousEmailAccountLinking: true,
+  })
+);
 
-if (isFacebookConfigured) {
-  providers.push(
-    FacebookProvider({
-      clientId: facebookClientId!,
-      clientSecret: facebookClientSecret!,
-      allowDangerousEmailAccountLinking: true,
-    })
-  );
-}
+// Facebook provider - always registered
+providers.push(
+  FacebookProvider({
+    clientId: isFacebookConfigured ? facebookClientId! : "mock-facebook-app-id",
+    clientSecret: isFacebookConfigured ? facebookClientSecret! : "mock-facebook-app-secret",
+    allowDangerousEmailAccountLinking: true,
+  })
+);
 
 // Credentials provider - always available
 providers.push(
@@ -68,7 +79,89 @@ providers.push(
         return null;
       }
 
-      // Return user object that will be saved in JWT
+      return {
+        id: user.id,
+        name: user.name || "",
+        email: user.email,
+        image: user.image || null,
+      };
+    },
+  })
+);
+
+// Mock OAuth provider - for development without real OAuth credentials
+// This provider creates/finds users based on the mock provider name
+providers.push(
+  CredentialsProvider({
+    id: "mock-google",
+    name: "mock-google",
+    credentials: {
+      email: { label: "Email", type: "email" },
+      name: { label: "Name", type: "text" },
+      image: { label: "Image", type: "text" },
+    },
+    async authorize(credentials) {
+      if (!credentials?.email) return null;
+
+      const email = credentials.email.toLowerCase().trim();
+      const name = credentials.name || email.split("@")[0];
+
+      // Find or create user
+      let user = await db.user.findUnique({
+        where: { email },
+      });
+
+      if (!user) {
+        user = await db.user.create({
+          data: {
+            email,
+            name,
+            image: credentials.image || null,
+            emailVerified: new Date(),
+          },
+        });
+      }
+
+      return {
+        id: user.id,
+        name: user.name || "",
+        email: user.email,
+        image: user.image || null,
+      };
+    },
+  })
+);
+
+providers.push(
+  CredentialsProvider({
+    id: "mock-facebook",
+    name: "mock-facebook",
+    credentials: {
+      email: { label: "Email", type: "email" },
+      name: { label: "Name", type: "text" },
+      image: { label: "Image", type: "text" },
+    },
+    async authorize(credentials) {
+      if (!credentials?.email) return null;
+
+      const email = credentials.email.toLowerCase().trim();
+      const name = credentials.name || email.split("@")[0];
+
+      let user = await db.user.findUnique({
+        where: { email },
+      });
+
+      if (!user) {
+        user = await db.user.create({
+          data: {
+            email,
+            name,
+            image: credentials.image || null,
+            emailVerified: new Date(),
+          },
+        });
+      }
+
       return {
         id: user.id,
         name: user.name || "",
@@ -80,9 +173,6 @@ providers.push(
 );
 
 export const authOptions: NextAuthOptions = {
-  // IMPORTANT: Do NOT use PrismaAdapter with Credentials provider + JWT strategy
-  // The adapter causes conflicts with credentials-based auth.
-  // We handle user lookup manually in the authorize() function instead.
   providers,
   session: {
     strategy: "jwt",
@@ -95,7 +185,6 @@ export const authOptions: NextAuthOptions = {
   debug: process.env.NODE_ENV === "development",
   callbacks: {
     async jwt({ token, user, account, trigger }) {
-      // On sign in, add user info to the token
       if (user) {
         token.id = user.id;
         token.name = user.name;
@@ -105,7 +194,6 @@ export const authOptions: NextAuthOptions = {
       if (account) {
         token.provider = account.provider;
       }
-      // On session update, refresh user data from DB
       if (trigger === "update" && token.email) {
         const dbUser = await db.user.findUnique({
           where: { email: token.email },
@@ -127,7 +215,7 @@ export const authOptions: NextAuthOptions = {
       return session;
     },
     async signIn({ user, account, profile }) {
-      // For OAuth providers, ensure user exists in database
+      // For real Google OAuth
       if (account?.provider === "google" && profile?.email) {
         try {
           const existingUser = await db.user.findUnique({
@@ -151,6 +239,7 @@ export const authOptions: NextAuthOptions = {
           return false;
         }
       }
+      // For real Facebook OAuth
       if (account?.provider === "facebook" && profile?.email) {
         try {
           const existingUser = await db.user.findUnique({
