@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter, Open_Sans } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
+import { AuthProvider } from "@/components/auth-provider";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -31,7 +32,9 @@ export default function RootLayout({
       <body
         className={`${inter.variable} ${openSans.variable} antialiased bg-white text-gray-900`}
       >
-        {children}
+        <AuthProvider>
+          {children}
+        </AuthProvider>
         <Toaster />
       </body>
     </html>
