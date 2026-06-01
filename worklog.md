@@ -120,3 +120,25 @@ Stage Summary:
 - Credentials login (email/password) continues to work as before
 - Registration with auto-login works correctly
 - All auth flows functional end-to-end
+
+---
+Task ID: oauth-ui-fix
+Agent: Main Agent
+Task: Remove "not configured" warning from OAuth dialog and make sign-in flow professional
+
+Work Log:
+- Redesigned MockOAuthDialog to look like a professional Google/Facebook sign-in experience
+- Removed "Mode démonstration" subtitle
+- Removed "OAuth Google n'est pas encore configuré avec des identifiants réels" warning banner
+- Added privacy note with shield icon instead
+- Google dialog uses Google-style white header with centered logo
+- Facebook dialog uses Facebook-style blue header with centered logo
+- Removed "(démo)" labels from Google and Facebook buttons on login and register pages
+- Build passes successfully
+- All 5 auth providers registered and functional
+
+Stage Summary:
+- Google/Facebook sign-in buttons now show clean, professional dialogs
+- No more "not configured" or "demo" messages visible to users
+- The sign-in flow works: click button → enter email/name → account created/connected → redirect to home
+- When real OAuth credentials are added later, the flow automatically switches to real OAuth
