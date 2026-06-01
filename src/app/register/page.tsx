@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
-import { signIn } from "next-auth/react";
+import React, { useState, useEffect } from "react";
+import { signIn, getSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -26,6 +26,16 @@ export default function RegisterPage() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
+  // Redirect if already logged in
+  useEffect(() => {
+    getSession().then((session) => {
+      if (session) {
+        router.push("/");
+        router.refresh();
+      }
+    });
+  }, [router]);
+
   // Password strength
   const getPasswordStrength = (pwd: string) => {
     let score = 0;
@@ -44,6 +54,7 @@ export default function RegisterPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+    setSuccess("");
 
     if (!name || !email || !password) {
       setError("Veuillez remplir tous les champs");
@@ -67,6 +78,7 @@ export default function RegisterPage() {
 
     setLoading(true);
     try {
+      // Step 1: Create account via API
       const res = await fetch("/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -81,12 +93,13 @@ export default function RegisterPage() {
 
       if (!res.ok) {
         setError(data.error || "Erreur lors de la création du compte");
+        setLoading(false);
         return;
       }
 
       setSuccess("Compte créé avec succès ! Connexion en cours...");
 
-      // Auto-login after registration
+      // Step 2: Auto-login with the new credentials
       const result = await signIn("credentials", {
         email: email.toLowerCase().trim(),
         password,
@@ -94,55 +107,52 @@ export default function RegisterPage() {
       });
 
       if (result?.ok) {
+        // Hard refresh to update session
         setTimeout(() => {
-          router.push("/");
-          router.refresh();
+          window.location.href = "/";
         }, 1000);
       } else {
+        // If auto-login fails, redirect to login page
         setTimeout(() => {
-          router.push("/login");
+          window.location.href = "/login";
         }, 1500);
       }
-    } catch {
-      setError("Erreur de connexion au serveur");
-    } finally {
+    } catch (err) {
+      console.error("Register error:", err);
+      setError("Erreur de connexion au serveur. Veuillez réessayer.");
       setLoading(false);
     }
   };
 
   const handleGoogleLogin = async () => {
     setError("");
-    setLoading(true);
     try {
       await signIn("google", { callbackUrl: "/" });
-    } catch {
+    } catch (err) {
+      console.error("Google login error:", err);
       setError("Erreur lors de la connexion Google");
-      setLoading(false);
     }
   };
 
   const handleFacebookLogin = async () => {
     setError("");
-    setLoading(true);
     try {
       await signIn("facebook", { callbackUrl: "/" });
-    } catch {
+    } catch (err) {
+      console.error("Facebook login error:", err);
       setError("Erreur lors de la connexion Facebook");
-      setLoading(false);
     }
   };
 
   return (
     <div className="min-h-screen flex">
-      {/* ===== LEFT PANEL - Marketing Content ===== */}
+      {/* ===== LEFT PANEL ===== */}
       <div className="hidden lg:flex lg:w-1/2 relative bg-gradient-to-br from-[#0F172A] via-[#1E1B4B] to-[#7C3AED] flex-col">
-        {/* Background decorations */}
         <div className="absolute inset-0 opacity-10">
           <div className="absolute top-20 left-10 w-72 h-72 bg-orange-400 rounded-full blur-3xl" />
           <div className="absolute bottom-20 right-10 w-96 h-96 bg-violet-400 rounded-full blur-3xl" />
         </div>
 
-        {/* Header */}
         <div className="relative z-10 p-8">
           <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
             <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-500 to-orange-400 flex items-center justify-center">
@@ -152,7 +162,6 @@ export default function RegisterPage() {
           </Link>
         </div>
 
-        {/* Main content */}
         <div className="relative z-10 flex-1 flex flex-col justify-center px-12 pb-16">
           <div className="inline-flex items-center gap-2 bg-orange-500/20 text-orange-300 border border-orange-500/30 rounded-full px-4 py-1.5 text-sm font-medium mb-6 w-fit">
             Examen civique 2026
@@ -202,7 +211,6 @@ export default function RegisterPage() {
       {/* ===== RIGHT PANEL - Registration Form ===== */}
       <div className="w-full lg:w-1/2 flex items-center justify-center bg-white p-6 sm:p-10">
         <div className="w-full max-w-md">
-          {/* Mobile logo */}
           <div className="lg:hidden mb-8">
             <Link href="/" className="flex items-center gap-2">
               <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-violet-600 to-orange-400 flex items-center justify-center">
@@ -212,7 +220,6 @@ export default function RegisterPage() {
             </Link>
           </div>
 
-          {/* Title */}
           <div className="mb-8">
             <h2 className="text-2xl sm:text-3xl font-bold text-gray-900" style={{ fontFamily: "var(--font-open-sans)" }}>
               Créez votre compte gratuitement
@@ -222,7 +229,6 @@ export default function RegisterPage() {
             </p>
           </div>
 
-          {/* Error / Success messages */}
           {error && (
             <div className="flex items-center gap-2 p-3 mb-4 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700">
               <AlertCircle className="w-4 h-4 shrink-0" />
@@ -236,9 +242,10 @@ export default function RegisterPage() {
             </div>
           )}
 
-          {/* Social login buttons */}
+          {/* Social login */}
           <div className="space-y-3 mb-6">
             <Button
+              type="button"
               variant="outline"
               className="w-full h-12 text-sm font-medium border-2 rounded-lg hover:bg-blue-50 group"
               onClick={handleGoogleLogin}
@@ -253,6 +260,7 @@ export default function RegisterPage() {
               Continuer avec Google
             </Button>
             <Button
+              type="button"
               variant="outline"
               className="w-full h-12 text-sm font-medium border-2 rounded-lg bg-[#1877F2] text-white border-[#1877F2] hover:bg-[#166FE5] hover:border-[#166FE5]"
               onClick={handleFacebookLogin}
@@ -265,7 +273,6 @@ export default function RegisterPage() {
             </Button>
           </div>
 
-          {/* Separator */}
           <div className="flex items-center gap-3 mb-6">
             <Separator className="flex-1" />
             <span className="text-sm text-gray-400 font-medium">Ou</span>
@@ -292,13 +299,13 @@ export default function RegisterPage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="email" className="text-sm font-medium text-gray-700">
+              <Label htmlFor="reg-email" className="text-sm font-medium text-gray-700">
                 E-mail <span className="text-red-500">*</span>
               </Label>
               <div className="relative">
                 <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                 <Input
-                  id="email"
+                  id="reg-email"
                   type="email"
                   placeholder="votre@email.com"
                   value={email}
@@ -312,13 +319,13 @@ export default function RegisterPage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="password" className="text-sm font-medium text-gray-700">
+              <Label htmlFor="reg-password" className="text-sm font-medium text-gray-700">
                 Mot de passe <span className="text-red-500">*</span>
               </Label>
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                 <Input
-                  id="password"
+                  id="reg-password"
                   type={showPassword ? "text" : "password"}
                   placeholder="6 caractères minimum"
                   value={password}
@@ -336,7 +343,6 @@ export default function RegisterPage() {
                   {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
               </div>
-              {/* Password strength indicator */}
               {password.length > 0 && (
                 <div className="space-y-1">
                   <div className="flex gap-1">
@@ -357,13 +363,13 @@ export default function RegisterPage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="confirmPassword" className="text-sm font-medium text-gray-700">
+              <Label htmlFor="confirm-password" className="text-sm font-medium text-gray-700">
                 Confirmer le mot de passe <span className="text-red-500">*</span>
               </Label>
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                 <Input
-                  id="confirmPassword"
+                  id="confirm-password"
                   type={showPassword ? "text" : "password"}
                   placeholder="Confirmez votre mot de passe"
                   value={confirmPassword}
@@ -379,7 +385,6 @@ export default function RegisterPage() {
               )}
             </div>
 
-            {/* Terms acceptance */}
             <div className="flex items-start gap-2">
               <Checkbox
                 id="terms"
@@ -414,12 +419,10 @@ export default function RegisterPage() {
             </Button>
           </form>
 
-          {/* Legal text */}
           <p className="text-xs text-gray-400 mt-4 leading-relaxed">
             En créant un compte, vous acceptez que vos données personnelles soient utilisées pour la création et la gestion de votre compte, le suivi de la relation client, la personnalisation de votre expérience et la sécurité de notre service. Vos données ne seront pas revendues à des tiers.
           </p>
 
-          {/* Login link */}
           <div className="mt-6 text-center">
             <p className="text-sm text-gray-500">
               Vous avez déjà un compte ?{" "}

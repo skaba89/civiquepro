@@ -2,7 +2,6 @@ import type { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
 import FacebookProvider from "next-auth/providers/facebook";
-import { PrismaAdapter } from "@auth/prisma-adapter";
 import bcrypt from "bcryptjs";
 import { db } from "@/lib/db";
 
@@ -17,7 +16,7 @@ const facebookClientId = process.env.FACEBOOK_CLIENT_ID;
 const facebookClientSecret = process.env.FACEBOOK_CLIENT_SECRET;
 const isFacebookConfigured = !!(facebookClientId && facebookClientSecret);
 
-// Build providers list - only include OAuth providers if properly configured
+// Build providers list
 const providers: NextAuthOptions["providers"] = [];
 
 if (isGoogleConfigured) {
@@ -40,8 +39,10 @@ if (isFacebookConfigured) {
   );
 }
 
+// Credentials provider - always available
 providers.push(
   CredentialsProvider({
+    id: "credentials",
     name: "credentials",
     credentials: {
       email: { label: "Email", type: "email" },
@@ -49,41 +50,52 @@ providers.push(
     },
     async authorize(credentials) {
       if (!credentials?.email || !credentials?.password) {
-        throw new Error("Email et mot de passe requis");
+        return null;
       }
 
+      const email = credentials.email.toLowerCase().trim();
+
       const user = await db.user.findUnique({
-        where: { email: credentials.email.toLowerCase().trim() },
+        where: { email },
       });
 
       if (!user || !user.password) {
-        throw new Error("Aucun compte trouvé avec cet email");
+        return null;
       }
 
       const isValid = await bcrypt.compare(credentials.password, user.password);
       if (!isValid) {
-        throw new Error("Mot de passe incorrect");
+        return null;
       }
 
+      // Return user object that will be saved in JWT
       return {
         id: user.id,
-        name: user.name,
+        name: user.name || "",
         email: user.email,
-        image: user.image,
+        image: user.image || null,
       };
     },
   })
 );
 
 export const authOptions: NextAuthOptions = {
-  // @ts-expect-error - PrismaAdapter type mismatch with next-auth v4
-  adapter: PrismaAdapter(db),
+  // IMPORTANT: Do NOT use PrismaAdapter with Credentials provider + JWT strategy
+  // The adapter causes conflicts with credentials-based auth.
+  // We handle user lookup manually in the authorize() function instead.
   providers,
   session: {
     strategy: "jwt",
   },
+  pages: {
+    signIn: "/login",
+    error: "/login",
+  },
+  secret: process.env.NEXTAUTH_SECRET || "civiquepro-dev-secret-key-2026",
+  debug: process.env.NODE_ENV === "development",
   callbacks: {
-    async jwt({ token, user, account }) {
+    async jwt({ token, user, account, trigger }) {
+      // On sign in, add user info to the token
       if (user) {
         token.id = user.id;
         token.name = user.name;
@@ -93,6 +105,16 @@ export const authOptions: NextAuthOptions = {
       if (account) {
         token.provider = account.provider;
       }
+      // On session update, refresh user data from DB
+      if (trigger === "update" && token.email) {
+        const dbUser = await db.user.findUnique({
+          where: { email: token.email },
+        });
+        if (dbUser) {
+          token.name = dbUser.name;
+          token.picture = dbUser.image;
+        }
+      }
       return token;
     },
     async session({ session, token }) {
@@ -100,7 +122,7 @@ export const authOptions: NextAuthOptions = {
         session.user.id = token.id as string;
         session.user.name = token.name as string;
         session.user.email = token.email as string;
-        session.user.image = token.picture as string;
+        session.user.image = token.picture as string || null;
       }
       return session;
     },
@@ -112,7 +134,7 @@ export const authOptions: NextAuthOptions = {
             where: { email: profile.email },
           });
           if (!existingUser) {
-            await db.user.create({
+            const newUser = await db.user.create({
               data: {
                 email: profile.email,
                 name: profile.name || profile.email.split("@")[0],
@@ -120,9 +142,13 @@ export const authOptions: NextAuthOptions = {
                 emailVerified: new Date(),
               },
             });
+            user.id = newUser.id;
+          } else {
+            user.id = existingUser.id;
           }
         } catch (error) {
           console.error("Error handling Google sign in:", error);
+          return false;
         }
       }
       if (account?.provider === "facebook" && profile?.email) {
@@ -131,7 +157,7 @@ export const authOptions: NextAuthOptions = {
             where: { email: profile.email },
           });
           if (!existingUser) {
-            await db.user.create({
+            const newUser = await db.user.create({
               data: {
                 email: profile.email,
                 name: profile.name || profile.email.split("@")[0],
@@ -139,20 +165,18 @@ export const authOptions: NextAuthOptions = {
                 emailVerified: new Date(),
               },
             });
+            user.id = newUser.id;
+          } else {
+            user.id = existingUser.id;
           }
         } catch (error) {
           console.error("Error handling Facebook sign in:", error);
+          return false;
         }
       }
       return true;
     },
   },
-  pages: {
-    signIn: "/login",
-    error: "/login",
-  },
-  secret: process.env.NEXTAUTH_SECRET || "civiquepro-dev-secret-key-2026",
-  debug: process.env.NODE_ENV === "development",
 };
 
 export { isGoogleConfigured, isFacebookConfigured };

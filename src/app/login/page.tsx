@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
-import { signIn } from "next-auth/react";
+import React, { useState, useEffect } from "react";
+import { signIn, getSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -24,9 +24,20 @@ export default function LoginPage() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
+  // Check if already logged in
+  useEffect(() => {
+    getSession().then((session) => {
+      if (session) {
+        router.push("/");
+        router.refresh();
+      }
+    });
+  }, [router]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+    setSuccess("");
 
     if (!email || !password) {
       setError("Veuillez remplir tous les champs");
@@ -36,50 +47,55 @@ export default function LoginPage() {
     setLoading(true);
     try {
       const result = await signIn("credentials", {
-        email,
+        email: email.toLowerCase().trim(),
         password,
         redirect: false,
       });
 
       if (result?.error) {
-        setError(
-          result.error === "CredentialsSignin"
-            ? "Email ou mot de passe incorrect"
-            : result.error
-        );
-      } else {
+        // Map common NextAuth errors to French messages
+        const errorMessages: Record<string, string> = {
+          "CredentialsSignin": "Email ou mot de passe incorrect",
+          "SessionRequired": "Veuillez vous connecter pour continuer",
+          "Default": "Une erreur est survenue lors de la connexion",
+        };
+        setError(errorMessages[result.error] || result.error);
+        setLoading(false);
+      } else if (result?.ok) {
         setSuccess("Connexion réussie ! Redirection...");
+        // Force a hard refresh to update the session
         setTimeout(() => {
-          router.push("/");
-          router.refresh();
+          window.location.href = "/";
         }, 800);
+      } else {
+        // result is undefined or null - unexpected
+        setError("Erreur inattendue. Veuillez réessayer.");
+        setLoading(false);
       }
-    } catch {
-      setError("Erreur de connexion au serveur");
-    } finally {
+    } catch (err) {
+      console.error("Login error:", err);
+      setError("Erreur de connexion au serveur. Veuillez réessayer.");
       setLoading(false);
     }
   };
 
   const handleGoogleLogin = async () => {
     setError("");
-    setLoading(true);
     try {
       await signIn("google", { callbackUrl: "/" });
-    } catch {
+    } catch (err) {
+      console.error("Google login error:", err);
       setError("Erreur lors de la connexion Google");
-      setLoading(false);
     }
   };
 
   const handleFacebookLogin = async () => {
     setError("");
-    setLoading(true);
     try {
       await signIn("facebook", { callbackUrl: "/" });
-    } catch {
+    } catch (err) {
+      console.error("Facebook login error:", err);
       setError("Erreur lors de la connexion Facebook");
-      setLoading(false);
     }
   };
 
@@ -87,13 +103,11 @@ export default function LoginPage() {
     <div className="min-h-screen flex">
       {/* ===== LEFT PANEL - Marketing Content ===== */}
       <div className="hidden lg:flex lg:w-1/2 relative bg-gradient-to-br from-[#0F172A] via-[#1E1B4B] to-[#7C3AED] flex-col">
-        {/* Background decorations */}
         <div className="absolute inset-0 opacity-10">
           <div className="absolute top-20 left-10 w-72 h-72 bg-orange-400 rounded-full blur-3xl" />
           <div className="absolute bottom-20 right-10 w-96 h-96 bg-violet-400 rounded-full blur-3xl" />
         </div>
 
-        {/* Header */}
         <div className="relative z-10 p-8">
           <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
             <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-500 to-orange-400 flex items-center justify-center">
@@ -103,7 +117,6 @@ export default function LoginPage() {
           </Link>
         </div>
 
-        {/* Main content */}
         <div className="relative z-10 flex-1 flex flex-col justify-center px-12 pb-16">
           <div className="inline-flex items-center gap-2 bg-orange-500/20 text-orange-300 border border-orange-500/30 rounded-full px-4 py-1.5 text-sm font-medium mb-6 w-fit">
             Examen civique 2026
@@ -173,13 +186,15 @@ export default function LoginPage() {
             </p>
           </div>
 
-          {/* Error / Success messages */}
+          {/* Error message */}
           {error && (
             <div className="flex items-center gap-2 p-3 mb-4 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700">
               <AlertCircle className="w-4 h-4 shrink-0" />
               {error}
             </div>
           )}
+
+          {/* Success message */}
           {success && (
             <div className="flex items-center gap-2 p-3 mb-4 bg-green-50 border border-green-200 rounded-lg text-sm text-green-700">
               <CheckCircle2 className="w-4 h-4 shrink-0" />
@@ -190,6 +205,7 @@ export default function LoginPage() {
           {/* Social login buttons */}
           <div className="space-y-3 mb-6">
             <Button
+              type="button"
               variant="outline"
               className="w-full h-12 text-sm font-medium border-2 rounded-lg hover:bg-blue-50 group"
               onClick={handleGoogleLogin}
@@ -204,6 +220,7 @@ export default function LoginPage() {
               Continuer avec Google
             </Button>
             <Button
+              type="button"
               variant="outline"
               className="w-full h-12 text-sm font-medium border-2 rounded-lg bg-[#1877F2] text-white border-[#1877F2] hover:bg-[#166FE5] hover:border-[#166FE5]"
               onClick={handleFacebookLogin}
