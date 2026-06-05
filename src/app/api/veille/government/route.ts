@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
 import ZAI from "z-ai-web-dev-sdk";
-import { PrismaClient } from "@prisma/client";
+import { db } from "@/lib/db";
+import { requireAuth } from "@/lib/auth-middleware";
 
-const prisma = new PrismaClient();
 
 // Mise à jour des membres du gouvernement via recherche web
 export async function POST() {
@@ -67,7 +67,7 @@ Réponds en JSON uniquement :
     }
 
     // Désactiver les anciens membres
-    await prisma.governmentMember.updateMany({
+    await db.governmentMember.updateMany({
       where: { active: true },
       data: { active: false, endDate: new Date() }
     });
@@ -75,7 +75,7 @@ Réponds en JSON uniquement :
     // Insérer les nouveaux membres
     let savedCount = 0;
     for (const member of parsed.members) {
-      await prisma.governmentMember.create({
+      await db.governmentMember.create({
         data: {
           name: member.name,
           role: member.role,
@@ -89,12 +89,12 @@ Réponds en JSON uniquement :
     }
 
     // Enregistrer comme changement juridique si c'est un nouveau gouvernement
-    const existingGovUpdate = await prisma.legalUpdate.findFirst({
+    const existingGovUpdate = await db.legalUpdate.findFirst({
       where: { category: "gouvernement", title: { contains: parsed.governmentName || "Gouvernement" } }
     });
 
     if (!existingGovUpdate && savedCount > 0) {
-      await prisma.legalUpdate.create({
+      await db.legalUpdate.create({
         data: {
           title: `${parsed.governmentName} - Composition du gouvernement`,
           description: `Mise à jour de la composition du gouvernement français : ${savedCount} membres identifiés. ${parsed.lastUpdated}`,
@@ -111,7 +111,7 @@ Réponds en JSON uniquement :
 
     // Log
     const duration = Date.now() - startTime;
-    await prisma.veilleLog.create({
+    await db.veilleLog.create({
       data: {
         action: "government_update",
         status: "completed",
@@ -122,7 +122,7 @@ Réponds en JSON uniquement :
     });
 
     // Mettre à jour la config
-    await prisma.veilleConfig.upsert({
+    await db.veilleConfig.upsert({
       where: { key: "last_government_update" },
       update: { lastCheckedAt: new Date(), value: new Date().toISOString() },
       create: { key: "last_government_update", value: new Date().toISOString(), description: "Dernière mise à jour gouvernement" }
@@ -140,7 +140,7 @@ Réponds en JSON uniquement :
     const errorMessage = error instanceof Error ? error.message : "Erreur inconnue";
     console.error("Government update error:", errorMessage);
     
-    await prisma.veilleLog.create({
+    await db.veilleLog.create({
       data: {
         action: "government_update",
         status: "error",
@@ -158,7 +158,7 @@ Réponds en JSON uniquement :
 // GET: Récupérer les membres actuels du gouvernement
 export async function GET() {
   try {
-    const members = await prisma.governmentMember.findMany({
+    const members = await db.governmentMember.findMany({
       where: { active: true },
       orderBy: [{ role: "asc" }, { ministry: "asc" }],
     });

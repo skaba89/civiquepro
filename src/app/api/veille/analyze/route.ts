@@ -1,11 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import ZAI from "z-ai-web-dev-sdk";
-import { PrismaClient } from "@prisma/client";
+import { db } from "@/lib/db";
+import { requireAuth } from "@/lib/auth-middleware";
 
-const prisma = new PrismaClient();
 
 // Analyse IA d'un changement juridique spécifique et génération de questions
 export async function POST(req: NextRequest) {
+  const { error: authError } = await requireAuth(req);
+  if (authError) return authError;
+
   const startTime = Date.now();
 
   try {
@@ -20,7 +23,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const legalUpdate = await prisma.legalUpdate.findUnique({
+    const legalUpdate = await db.legalUpdate.findUnique({
       where: { id: legalUpdateId }
     });
 
@@ -105,7 +108,7 @@ Réponds en JSON uniquement :
     // Sauvegarder les suggestions
     let savedCount = 0;
     for (const question of parsed.questions) {
-      await prisma.questionSuggestion.create({
+      await db.questionSuggestion.create({
         data: {
           legalUpdateId,
           action: "add",
@@ -119,7 +122,7 @@ Réponds en JSON uniquement :
     }
 
     // Mettre à jour le statut du changement
-    await prisma.legalUpdate.update({
+    await db.legalUpdate.update({
       where: { id: legalUpdateId },
       data: {
         status: "analyzed",
@@ -130,7 +133,7 @@ Réponds en JSON uniquement :
 
     // Log
     const duration = Date.now() - startTime;
-    await prisma.veilleLog.create({
+    await db.veilleLog.create({
       data: {
         action: "analyze",
         status: "completed",

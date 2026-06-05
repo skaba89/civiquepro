@@ -1,10 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
+import { db } from "@/lib/db";
+import { requireAuth } from "@/lib/auth-middleware";
 
-const prisma = new PrismaClient();
 
 // Appliquer ou rejeter une suggestion de question
 export async function POST(req: NextRequest) {
+  const { error: authError } = await requireAuth(req);
+  if (authError) return authError;
+
   try {
     const body = await req.json();
     const { suggestionId, action } = body; // action: "approve" | "reject"
@@ -16,7 +19,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const suggestion = await prisma.questionSuggestion.findUnique({
+    const suggestion = await db.questionSuggestion.findUnique({
       where: { id: suggestionId },
       include: { legalUpdate: true }
     });
@@ -30,7 +33,7 @@ export async function POST(req: NextRequest) {
 
     if (action === "approve") {
       // Marquer la suggestion comme approuvée
-      await prisma.questionSuggestion.update({
+      await db.questionSuggestion.update({
         where: { id: suggestionId },
         data: {
           status: "approved",
@@ -39,7 +42,7 @@ export async function POST(req: NextRequest) {
       });
 
       // Marquer le changement juridique comme appliqué si toutes les suggestions sont traitées
-      const pendingSuggestions = await prisma.questionSuggestion.count({
+      const pendingSuggestions = await db.questionSuggestion.count({
         where: {
           legalUpdateId: suggestion.legalUpdateId,
           status: "pending"
@@ -47,13 +50,13 @@ export async function POST(req: NextRequest) {
       });
 
       if (pendingSuggestions === 0) {
-        await prisma.legalUpdate.update({
+        await db.legalUpdate.update({
           where: { id: suggestion.legalUpdateId },
           data: { status: "applied", appliedAt: new Date() }
         });
       }
 
-      await prisma.veilleLog.create({
+      await db.veilleLog.create({
         data: {
           action: "apply",
           status: "completed",
@@ -69,7 +72,7 @@ export async function POST(req: NextRequest) {
       });
 
     } else if (action === "reject") {
-      await prisma.questionSuggestion.update({
+      await db.questionSuggestion.update({
         where: { id: suggestionId },
         data: {
           status: "rejected",

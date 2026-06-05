@@ -1,11 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import ZAI from "z-ai-web-dev-sdk";
-import { PrismaClient } from "@prisma/client";
-
-const prisma = new PrismaClient();
+import { db } from "@/lib/db";
+import { requireAuth } from "@/lib/auth-middleware";
 
 // Recherche web des dernières évolutions juridiques et gouvernementales
 export async function POST(req: NextRequest) {
+  // Auth required
+  const { error: authError } = await requireAuth(req);
+  if (authError) return authError;
+
   const startTime = Date.now();
   
   try {
@@ -15,7 +18,7 @@ export async function POST(req: NextRequest) {
 
     // Vérifier si une recherche récente existe (< 6h)
     if (!forceRefresh) {
-      const lastCheck = await prisma.veilleConfig.findUnique({ where: { key: "last_search" } });
+      const lastCheck = await db.veilleConfig.findUnique({ where: { key: "last_search" } });
       if (lastCheck?.lastCheckedAt) {
         const hoursSince = (Date.now() - lastCheck.lastCheckedAt.getTime()) / (1000 * 60 * 60);
         if (hoursSince < 6) {
@@ -29,7 +32,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Log de démarrage
-    const log = await prisma.veilleLog.create({
+    const log = await db.veilleLog.create({
       data: { action: "search", status: "started", details: "Recherche web des évolutions juridiques" }
     });
 
@@ -148,6 +151,7 @@ Réponds en JSON uniquement avec ce format :
       questionSuggestions: Array<{
         action: string;
         questionId: string | null;
+        impact?: string;
         suggestedQuestion: {
           text: string;
           options: string[];
@@ -170,7 +174,7 @@ Réponds en JSON uniquement avec ce format :
     // Sauvegarder les changements détectés en base
     let savedCount = 0;
     for (const change of parsedResponse.changes) {
-      const legalUpdate = await prisma.legalUpdate.create({
+      const legalUpdate = await db.legalUpdate.create({
         data: {
           title: change.title,
           description: change.description,
@@ -186,7 +190,7 @@ Réponds en JSON uniquement avec ce format :
 
       // Sauvegarder les suggestions de questions
       for (const suggestion of change.questionSuggestions) {
-        await prisma.questionSuggestion.create({
+        await db.questionSuggestion.create({
           data: {
             legalUpdateId: legalUpdate.id,
             action: suggestion.action,
@@ -194,8 +198,8 @@ Réponds en JSON uniquement avec ce format :
             questionId: suggestion.questionId,
             suggestedData: JSON.stringify(suggestion.suggestedQuestion),
             reason: suggestion.reason,
-            status: suggestion.impact === "critical" ? "auto_applied" : "pending",
-            appliedAt: suggestion.impact === "critical" ? new Date() : null,
+            status: change.impact === "critical" ? "auto_applied" : "pending",
+            appliedAt: change.impact === "critical" ? new Date() : null,
           }
         });
         savedCount++;
@@ -203,7 +207,7 @@ Réponds en JSON uniquement avec ce format :
     }
 
     // Mettre à jour la config de dernière recherche
-    await prisma.veilleConfig.upsert({
+    await db.veilleConfig.upsert({
       where: { key: "last_search" },
       update: { lastCheckedAt: new Date(), value: new Date().toISOString() },
       create: { key: "last_search", value: new Date().toISOString(), description: "Dernière recherche veille IA" }
@@ -211,7 +215,7 @@ Réponds en JSON uniquement avec ce format :
 
     // Mettre à jour le log
     const duration = Date.now() - startTime;
-    await prisma.veilleLog.update({
+    await db.veilleLog.update({
       where: { id: log.id },
       data: {
         status: "completed",
@@ -233,7 +237,7 @@ Réponds en JSON uniquement avec ce format :
     const errorMessage = error instanceof Error ? error.message : "Erreur inconnue";
     console.error("Veille search error:", errorMessage);
     
-    await prisma.veilleLog.create({
+    await db.veilleLog.create({
       data: {
         action: "search",
         status: "error",

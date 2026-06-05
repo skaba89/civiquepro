@@ -1,14 +1,13 @@
 import { NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
+import { db } from "@/lib/db";
 
-const prisma = new PrismaClient();
 
 // Statut de la veille IA
 export async function GET() {
   try {
     // Dernières recherches
-    const lastSearch = await prisma.veilleConfig.findUnique({ where: { key: "last_search" } });
-    const lastGovUpdate = await prisma.veilleConfig.findUnique({ where: { key: "last_government_update" } });
+    const lastSearch = await db.veilleConfig.findUnique({ where: { key: "last_search" } });
+    const lastGovUpdate = await db.veilleConfig.findUnique({ where: { key: "last_government_update" } });
 
     // Compteurs
     const [
@@ -19,31 +18,31 @@ export async function GET() {
       totalGovernmentMembers,
       recentLogs,
     ] = await Promise.all([
-      prisma.legalUpdate.count(),
-      prisma.questionSuggestion.count({ where: { status: "pending" } }),
-      prisma.questionSuggestion.count({ where: { status: "approved" } }),
-      prisma.questionSuggestion.count({ where: { status: "auto_applied" } }),
-      prisma.governmentMember.count({ where: { active: true } }),
-      prisma.veilleLog.findMany({
+      db.legalUpdate.count(),
+      db.questionSuggestion.count({ where: { status: "pending" } }),
+      db.questionSuggestion.count({ where: { status: "approved" } }),
+      db.questionSuggestion.count({ where: { status: "auto_applied" } }),
+      db.governmentMember.count({ where: { active: true } }),
+      db.veilleLog.findMany({
         take: 10,
         orderBy: { createdAt: "desc" },
       }),
     ]);
 
     // Changements par catégorie
-    const updatesByCategory = await prisma.legalUpdate.groupBy({
+    const updatesByCategory = await db.legalUpdate.groupBy({
       by: ["category"],
       _count: { id: true },
     });
 
     // Changements par impact
-    const updatesByImpact = await prisma.legalUpdate.groupBy({
+    const updatesByImpact = await db.legalUpdate.groupBy({
       by: ["impact"],
       _count: { id: true },
     });
 
     // Derniers changements détectés
-    const recentUpdates = await prisma.legalUpdate.findMany({
+    const recentUpdates = await db.legalUpdate.findMany({
       take: 5,
       orderBy: { createdAt: "desc" },
       include: {

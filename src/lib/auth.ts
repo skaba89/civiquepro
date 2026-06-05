@@ -181,8 +181,8 @@ export const authOptions: NextAuthOptions = {
     signIn: "/login",
     error: "/login",
   },
-  secret: process.env.NEXTAUTH_SECRET || "civiquepro-dev-secret-key-2026",
-  debug: process.env.NODE_ENV === "development",
+  secret: process.env.NEXTAUTH_SECRET,
+  debug: false,
   callbacks: {
     async jwt({ token, user, account, trigger }) {
       if (user) {
