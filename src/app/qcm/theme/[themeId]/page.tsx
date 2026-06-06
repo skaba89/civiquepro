@@ -38,7 +38,7 @@ export default function ThemePage() {
       <div className="grid md:grid-cols-2 gap-6 mb-12">
         {theme.series.map((serie) => (
           <Link key={serie.id} href={`/qcm/quiz/${theme.id}/${serie.id}`}>
-            <Card className="border-2 hover:border-blue-500 transition-all group cursor-pointer h-full">
+            <Card className="border-2 hover:border-violet-500 transition-all group cursor-pointer h-full">
               <CardHeader>
                 <Badge className={`w-fit ${c.light} ${c.text}`}>{serie.questions.length} questions</Badge>
                 <CardTitle className="text-xl mt-3" style={{ fontFamily: "var(--font-open-sans)" }}>{serie.title}</CardTitle>

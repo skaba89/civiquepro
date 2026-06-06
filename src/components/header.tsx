@@ -14,6 +14,17 @@ export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
 
+  // Close user menu on outside click
+  React.useEffect(() => {
+    const handleClick = (e: MouseEvent) => {
+      if (showUserMenu && !(e.target as HTMLElement).closest("[data-user-menu]")) {
+        setShowUserMenu(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, [showUserMenu]);
+
   const isActive = (id: string, href: string) => {
     if (id === "qcm") {
       return pathname.startsWith("/qcm");
@@ -44,7 +55,7 @@ export function Header() {
           </nav>
           <div className="flex items-center gap-3">
             {isAuthenticated && user ? (
-              <div className="relative">
+              <div className="relative" data-user-menu>
                 <button
                   onClick={() => setShowUserMenu(!showUserMenu)}
                   className="flex items-center gap-2 px-3 py-1.5 rounded-xl hover:bg-gray-50 transition-colors"
@@ -66,12 +77,13 @@ export function Header() {
                       <p className="text-sm font-semibold text-gray-900 truncate">{user.name}</p>
                       <p className="text-xs text-gray-500 truncate">{user.email}</p>
                     </div>
-                    <button
+                    <Link
+                      href="/profil"
                       onClick={() => { setShowUserMenu(false); }}
                       className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-gray-700 hover:bg-violet-50 hover:text-violet-600 transition-colors"
                     >
                       <UserIcon className="w-4 h-4" /> Mon profil
-                    </button>
+                    </Link>
                     <button
                       onClick={() => { setShowUserMenu(false); signOut({ callbackUrl: "/" }); }}
                       className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors"
@@ -121,12 +133,21 @@ export function Header() {
                 </Link>
               )}
               {isAuthenticated && (
-                <button
-                  onClick={() => { setMobileMenuOpen(false); signOut({ callbackUrl: "/" }); }}
-                  className="mt-2 flex items-center justify-center gap-2 px-4 py-3 bg-red-50 text-red-600 rounded-lg text-sm font-semibold"
-                >
-                  <LogOut className="w-4 h-4" /> Se déconnecter
-                </button>
+                <>
+                  <Link
+                    href="/profil"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="flex items-center gap-2 px-4 py-3 text-sm font-semibold rounded-lg text-gray-600 hover:bg-gray-50"
+                  >
+                    <UserIcon className="w-4 h-4" /> Mon profil
+                  </Link>
+                  <button
+                    onClick={() => { setMobileMenuOpen(false); signOut({ callbackUrl: "/" }); }}
+                    className="mt-2 flex items-center justify-center gap-2 px-4 py-3 bg-red-50 text-red-600 rounded-lg text-sm font-semibold"
+                  >
+                    <LogOut className="w-4 h-4" /> Se déconnecter
+                  </button>
+                </>
               )}
             </nav>
           </div>

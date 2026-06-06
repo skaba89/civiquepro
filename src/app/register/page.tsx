@@ -269,7 +269,7 @@ export default function RegisterPage() {
             <Button
               type="button"
               variant="outline"
-              className="w-full h-12 text-sm font-medium border-2 rounded-lg hover:bg-blue-50 group"
+              className="w-full h-12 text-sm font-medium border-2 rounded-lg hover:bg-violet-50 group"
               onClick={handleGoogleLogin}
               disabled={loading}
             >

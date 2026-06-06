@@ -25,7 +25,7 @@ export default function ExamenBlancPage() {
           </div>
           <div className="grid grid-cols-2 gap-4 mb-8">
             {[
-              { icon: <FileText className="w-5 h-5 text-blue-600" />, label: "40 questions", sub: "5 thématiques" },
+              { icon: <FileText className="w-5 h-5 text-violet-600" />, label: "40 questions", sub: "5 thématiques" },
               { icon: <Clock className="w-5 h-5 text-amber-600" />, label: "45 minutes", sub: "Chronométré" },
               { icon: <Trophy className="w-5 h-5 text-green-600" />, label: "32/40", sub: "Pour réussir" },
               { icon: <CheckCircle2 className="w-5 h-5 text-purple-600" />, label: "Corrigé", sub: "Détaillé" },
@@ -34,7 +34,7 @@ export default function ExamenBlancPage() {
             ))}
           </div>
           <Link href="/examen-blanc/quiz">
-            <Button size="lg" className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-6 text-lg font-bold rounded-xl shadow-lg shadow-blue-600/25 w-full sm:w-auto">
+            <Button size="lg" className="bg-violet-600 hover:bg-violet-700 text-white px-8 py-6 text-lg font-bold rounded-xl shadow-lg shadow-violet-600/25 w-full sm:w-auto">
               <Play className="mr-2 w-5 h-5" /> Démarrer l&apos;examen blanc
             </Button>
           </Link>

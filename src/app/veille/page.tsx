@@ -125,7 +125,7 @@ export default function VeilleIAPage() {
     critical: { bg: "bg-red-100", text: "text-red-700" },
   };
   const statusColors: Record<string, { bg: string; text: string }> = {
-    detected: { bg: "bg-blue-100", text: "text-blue-700" },
+    detected: { bg: "bg-violet-100", text: "text-violet-700" },
     analyzed: { bg: "bg-amber-100", text: "text-amber-700" },
     applied: { bg: "bg-green-100", text: "text-green-700" },
     ignored: { bg: "bg-gray-100", text: "text-gray-700" },
@@ -151,7 +151,7 @@ export default function VeilleIAPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
         <div className="flex items-center gap-4">
-          <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-blue-600 to-cyan-500 text-white flex items-center justify-center">
+          <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-violet-600 to-orange-400 text-white flex items-center justify-center">
             <Bot className="w-7 h-7" />
           </div>
           <div>
@@ -169,8 +169,8 @@ export default function VeilleIAPage() {
         const govMembers = status?.stats.totalGovernmentMembers || 0;
         return (
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
-            <div className="p-4 rounded-xl bg-blue-50 border border-gray-100">
-              <div className="flex items-center gap-2 mb-2"><Eye className="w-5 h-5 text-blue-600" /><span className="text-xs text-gray-500">Changements détectés</span></div>
+            <div className="p-4 rounded-xl bg-violet-50 border border-gray-100">
+              <div className="flex items-center gap-2 mb-2"><Eye className="w-5 h-5 text-violet-600" /><span className="text-xs text-gray-500">Changements détectés</span></div>
               <div className="text-2xl font-bold text-gray-900">{totalUpdates}</div>
             </div>
             <div className="p-4 rounded-xl bg-amber-50 border border-gray-100">
@@ -191,10 +191,10 @@ export default function VeilleIAPage() {
 
       {/* Action Buttons */}
       <div className="grid sm:grid-cols-2 gap-4 mb-8">
-        <Card className="border-2 hover:border-blue-400 transition-all cursor-pointer" onClick={handleSearch}>
+        <Card className="border-2 hover:border-violet-400 transition-all cursor-pointer" onClick={handleSearch}>
           <CardContent className="py-6">
             <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-xl bg-blue-600 text-white flex items-center justify-center shrink-0">
+              <div className="w-12 h-12 rounded-xl bg-violet-600 text-white flex items-center justify-center shrink-0">
                 {loading === "search" ? <RefreshCw className="w-6 h-6 animate-spin" /> : <Globe className="w-6 h-6" />}
               </div>
               <div className="flex-1">
@@ -225,10 +225,10 @@ export default function VeilleIAPage() {
 
       {/* Search Result */}
       {searchResult && (
-        <Card className="mb-8 border-2 border-blue-200 bg-blue-50/50">
+        <Card className="mb-8 border-2 border-violet-200 bg-violet-50/50">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-lg">
-              <Zap className="w-5 h-5 text-blue-600" />
+              <Zap className="w-5 h-5 text-violet-600" />
               Résultat de la dernière action
             </CardTitle>
           </CardHeader>
@@ -243,19 +243,19 @@ export default function VeilleIAPage() {
       {/* Tabs */}
       <div className="flex gap-2 mb-6 border-b border-gray-200 pb-3 overflow-x-auto">
         <button onClick={() => setActiveTab("dashboard")}
-          className={`flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-lg whitespace-nowrap transition-colors ${activeTab === "dashboard" ? "bg-blue-600 text-white" : "text-gray-600 hover:bg-gray-100"}`}>
+          className={`flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-lg whitespace-nowrap transition-colors ${activeTab === "dashboard" ? "bg-violet-600 text-white" : "text-gray-600 hover:bg-gray-100"}`}>
           <Eye className="w-4 h-4" />Changements détectés
         </button>
         <button onClick={() => setActiveTab("suggestions")}
-          className={`flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-lg whitespace-nowrap transition-colors ${activeTab === "suggestions" ? "bg-blue-600 text-white" : "text-gray-600 hover:bg-gray-100"}`}>
+          className={`flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-lg whitespace-nowrap transition-colors ${activeTab === "suggestions" ? "bg-violet-600 text-white" : "text-gray-600 hover:bg-gray-100"}`}>
           <Lightbulb className="w-4 h-4" />Suggestions IA
         </button>
         <button onClick={() => setActiveTab("government")}
-          className={`flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-lg whitespace-nowrap transition-colors ${activeTab === "government" ? "bg-blue-600 text-white" : "text-gray-600 hover:bg-gray-100"}`}>
+          className={`flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-lg whitespace-nowrap transition-colors ${activeTab === "government" ? "bg-violet-600 text-white" : "text-gray-600 hover:bg-gray-100"}`}>
           <Users className="w-4 h-4" />Gouvernement
         </button>
         <button onClick={() => setActiveTab("logs")}
-          className={`flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-lg whitespace-nowrap transition-colors ${activeTab === "logs" ? "bg-blue-600 text-white" : "text-gray-600 hover:bg-gray-100"}`}>
+          className={`flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-lg whitespace-nowrap transition-colors ${activeTab === "logs" ? "bg-violet-600 text-white" : "text-gray-600 hover:bg-gray-100"}`}>
           <FileCheck className="w-4 h-4" />Journal
         </button>
       </div>
@@ -294,7 +294,7 @@ export default function VeilleIAPage() {
                         <p className="text-sm text-gray-600 leading-relaxed">{update.description}</p>
                         <p className="text-xs text-gray-400 mt-2">{formatDate(update.createdAt)}</p>
                         {update.suggestions.length > 0 && (
-                          <p className="text-xs text-blue-600 font-medium mt-2">
+                          <p className="text-xs text-violet-600 font-medium mt-2">
                             {update.suggestions.length} suggestion(s) de questions
                           </p>
                         )}
@@ -350,7 +350,7 @@ export default function VeilleIAPage() {
                             </div>
                           ))}
                         </div>
-                        <div className="p-3 bg-blue-50 rounded-lg border border-blue-200 mb-3">
+                        <div className="p-3 bg-violet-50 rounded-lg border border-violet-200 mb-3">
                           <p className="text-xs text-gray-700 leading-relaxed">{questionData.explanation}</p>
                         </div>
                         <p className="text-xs text-gray-500 mb-3 italic">Source : {suggestion.updateTitle}</p>
@@ -397,8 +397,8 @@ export default function VeilleIAPage() {
                           <CardContent className="py-3 px-4">
                             <div className="flex items-center gap-3">
                               <div className={`w-9 h-9 rounded-full flex items-center justify-center shrink-0 text-white text-xs font-bold ${
-                                role === "Président de la République" ? "bg-blue-700" :
-                                role === "Premier ministre" ? "bg-blue-500" :
+                                role === "Président de la République" ? "bg-violet-700" :
+                                role === "Premier ministre" ? "bg-violet-500" :
                                 "bg-indigo-400"
                               }`}>
                                 {member.name.split(" ").map(n => n[0]).join("").slice(0, 2)}
@@ -439,7 +439,7 @@ export default function VeilleIAPage() {
                       <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${
                         log.status === "completed" ? "bg-green-100 text-green-700" :
                         log.status === "error" ? "bg-red-100 text-red-700" :
-                        "bg-blue-100 text-blue-700"
+                        "bg-violet-100 text-violet-700"
                       }`}>
                         {log.status === "completed" ? <CheckCircle2 className="w-4 h-4" /> :
                          log.status === "error" ? <XCircle className="w-4 h-4" /> :
@@ -454,7 +454,7 @@ export default function VeilleIAPage() {
                       <Badge variant="secondary" className={`text-xs ${
                         log.status === "completed" ? "bg-green-100 text-green-700" :
                         log.status === "error" ? "bg-red-100 text-red-700" :
-                        "bg-blue-100 text-blue-700"
+                        "bg-violet-100 text-violet-700"
                       }`}>{log.status}</Badge>
                       <p className="text-xs text-gray-400 mt-1">{formatDate(log.createdAt)}</p>
                     </div>
@@ -471,7 +471,7 @@ export default function VeilleIAPage() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2" style={{ fontFamily: "var(--font-open-sans)" }}>
-              <Bot className="w-5 h-5 text-blue-600" />
+              <Bot className="w-5 h-5 text-violet-600" />
               Comment fonctionne la Veille IA ?
             </CardTitle>
           </CardHeader>
@@ -490,7 +490,7 @@ export default function VeilleIAPage() {
           </CardHeader>
           <CardContent className="space-y-2">
             <div className="flex items-center gap-3 p-2 bg-white rounded-lg border border-amber-200">
-              <FileText className="w-4 h-4 text-blue-600" /><span className="text-sm text-gray-700">Nouvelles lois et réformes législatives</span>
+              <FileText className="w-4 h-4 text-violet-600" /><span className="text-sm text-gray-700">Nouvelles lois et réformes législatives</span>
             </div>
             <div className="flex items-center gap-3 p-2 bg-white rounded-lg border border-amber-200">
               <FileCheck className="w-4 h-4 text-green-600" /><span className="text-sm text-gray-700">Circulaires et décrets d&apos;application</span>

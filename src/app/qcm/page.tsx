@@ -27,7 +27,7 @@ export default function QCMPage() {
           const c = THEME_COLORS[theme.id];
           return (
             <Link key={serie.id} href={`/qcm/quiz/${theme.id}/${serie.id}`}>
-              <Card className="border-2 hover:border-blue-600 transition-all cursor-pointer group h-full">
+              <Card className="border-2 hover:border-violet-600 transition-all cursor-pointer group h-full">
                 <CardHeader>
                   <div className="flex items-center justify-between">
                     <Badge className={`${c.light} ${c.text}`}>{theme.shortTitle}</Badge>
@@ -85,7 +85,7 @@ export default function QCMPage() {
           <div className="grid sm:grid-cols-2 gap-4">
             {[
               { icon: <CheckCircle2 className="w-5 h-5 text-green-600" />, text: "40 questions conformes au programme" },
-              { icon: <Clock className="w-5 h-5 text-blue-600" />, text: "45 minutes chronométrées" },
+              { icon: <Clock className="w-5 h-5 text-violet-600" />, text: "45 minutes chronométrées" },
               { icon: <Trophy className="w-5 h-5 text-amber-600" />, text: "Seuil de réussite : 32/40 (80 %)" },
               { icon: <Lightbulb className="w-5 h-5 text-purple-600" />, text: "Corrections détaillées pour chaque question" },
             ].map((item, i) => (

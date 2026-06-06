@@ -17,9 +17,9 @@ export default function RessourcesPage() {
             <h2 className="text-xl font-bold text-gray-900 mb-4" style={{ fontFamily: "var(--font-open-sans)" }}>{category}</h2>
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {resources.filter(r => r.category === category).map((resource) => (
-                <Card key={resource.id} className="hover:shadow-md transition-shadow cursor-pointer border-2 hover:border-blue-400">
+                <Card key={resource.id} className="hover:shadow-md transition-shadow cursor-pointer border-2 hover:border-violet-400">
                   <CardHeader><CardTitle className="text-base" style={{ fontFamily: "var(--font-open-sans)" }}>{resource.title}</CardTitle><CardDescription className="text-sm">{resource.description}</CardDescription></CardHeader>
-                  <CardContent><span className="inline-flex items-center text-sm text-blue-600 font-medium">Lire la suite <ArrowRight className="ml-1 w-4 h-4" /></span></CardContent>
+                  <CardContent><span className="inline-flex items-center text-sm text-violet-600 font-medium">Lire la suite <ArrowRight className="ml-1 w-4 h-4" /></span></CardContent>
                 </Card>
               ))}
             </div>

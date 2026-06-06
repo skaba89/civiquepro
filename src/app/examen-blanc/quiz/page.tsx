@@ -13,6 +13,7 @@ export default function ExamenBlancQuizPage() {
       questions={questions}
       title="Examen Blanc - 40 questions"
       onBack={() => router.push("/examen-blanc")}
+      quizType="examen-blanc"
       isExamBlanc
     />
   );

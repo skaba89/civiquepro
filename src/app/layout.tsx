@@ -20,7 +20,7 @@ const openSans = Open_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "QCM Examen Civique 2026 - Tests et Séries en Ligne",
+  title: "CiviquePro - QCM Examen Civique 2026",
   description: "Entraînez-vous sur nos QCM examen civique 100% conformes au programme 2026. 40 questions, 5 thématiques, 45 minutes chrono. Réussissez votre examen civique du premier coup.",
   keywords: ["examen civique", "QCM", "préparation", "titre de séjour", "France", "république", "laïcité"],
 };

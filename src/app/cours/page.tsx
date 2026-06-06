@@ -24,7 +24,7 @@ export default function CoursPage() {
               <Card className="hover:shadow-lg transition-all cursor-pointer group border-2 h-full">
                 <CardHeader>
                   <div className={`w-12 h-12 rounded-xl ${c.bg} text-white flex items-center justify-center mb-3`}>{THEME_ICONS[themeId]}</div>
-                  <CardTitle className="text-lg group-hover:text-blue-600 transition-colors" style={{ fontFamily: "var(--font-open-sans)" }}>{course.title}</CardTitle>
+                  <CardTitle className="text-lg group-hover:text-violet-600 transition-colors" style={{ fontFamily: "var(--font-open-sans)" }}>{course.title}</CardTitle>
                   <CardDescription>{course.description}</CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -32,7 +32,7 @@ export default function CoursPage() {
                     {course.lessons.slice(0, 3).map((lesson, i) => (
                       <div key={i} className="flex items-center gap-2 text-sm text-gray-600"><BookOpen className="w-4 h-4 text-gray-400 shrink-0" /><span>{lesson}</span></div>
                     ))}
-                    {course.lessons.length > 3 && <span className="text-xs text-blue-600 font-medium">+ {course.lessons.length - 3} leçons</span>}
+                    {course.lessons.length > 3 && <span className="text-xs text-violet-600 font-medium">+ {course.lessons.length - 3} leçons</span>}
                   </div>
                   <Button variant="outline" className={`w-full ${c.text} border-current text-sm`}>Accéder au cours <ArrowRight className="ml-1 w-4 h-4" /></Button>
                 </CardContent>

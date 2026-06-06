@@ -19,12 +19,12 @@ export default function AnnalesPage() {
           <Link key={i} href="/examen-blanc/quiz">
             <Card className="hover:shadow-lg transition-all cursor-pointer group border-2 h-full">
               <CardHeader>
-                <Badge className="bg-blue-100 text-blue-700 w-fit">{session}</Badge>
+                <Badge className="bg-violet-100 text-violet-700 w-fit">{session}</Badge>
                 <CardTitle className="text-lg mt-2" style={{ fontFamily: "var(--font-open-sans)" }}>Annale {session}</CardTitle>
                 <CardDescription>40 questions - 45 minutes - Corrigé inclus</CardDescription>
               </CardHeader>
               <CardContent>
-                <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold"><Play className="mr-2 w-4 h-4" /> Commencer</Button>
+                <Button className="w-full bg-violet-600 hover:bg-violet-700 text-white font-semibold"><Play className="mr-2 w-4 h-4" /> Commencer</Button>
               </CardContent>
             </Card>
           </Link>

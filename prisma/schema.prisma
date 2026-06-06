@@ -27,6 +27,7 @@ model User {
   accounts Account[]
   sessions Session[]
   posts    Post[]
+  results  QuizResult[]
 }
 
 model Account {
@@ -75,6 +76,32 @@ model Post {
   updatedAt DateTime @updatedAt
 
   author User @relation(fields: [authorId], references: [id], onDelete: Cascade)
+}
+
+// ============================================================
+// Quiz Results - Progress Tracking
+// ============================================================
+
+model QuizResult {
+  id            String   @id @default(cuid())
+  userId        String
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  quizType      String   // "qcm" | "examen-blanc" | "theme"
+  themeId       String?  // For theme-specific quizzes
+  serieId       String?  // For specific series
+  
+  totalQuestions Int
+  correctAnswers Int
+  score          Float   // Percentage (0-100)
+  passed         Boolean
+  
+  timeUsed      Int      // Seconds used
+  answers       String   // JSON string of answers
+  
+  completedAt   DateTime @default(now())
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 }
 
 // ============================================================

@@ -21,7 +21,7 @@ export default function QuestionsPage() {
       <p className="text-gray-600 mb-8 max-w-3xl leading-relaxed">Parcourez l&apos;ensemble des questions de l&apos;examen civique, classées par thématique. Chaque question est accompagnée de sa correction.</p>
 
       <div className="flex flex-wrap gap-2 mb-8">
-        <Button variant={selectedTheme === null ? "default" : "outline"} className={selectedTheme === null ? "bg-blue-600 text-white" : ""} onClick={() => setSelectedTheme(null)}>
+        <Button variant={selectedTheme === null ? "default" : "outline"} className={selectedTheme === null ? "bg-violet-600 text-white" : ""} onClick={() => setSelectedTheme(null)}>
           Toutes ({allQuestions.length})
         </Button>
         {allThemes.map((theme) => (
@@ -48,7 +48,7 @@ export default function QuestionsPage() {
                       <Badge variant="secondary" className={`${c.light} ${c.text} text-xs`}>{q.themeTitle}</Badge>
                     </div>
                     <p className="text-sm text-gray-800 leading-relaxed mb-3">{q.text}</p>
-                    <button onClick={() => setExpandedQ(isExpanded ? null : q.id)} className="text-sm text-blue-600 font-medium hover:text-blue-800 flex items-center gap-1">
+                    <button onClick={() => setExpandedQ(isExpanded ? null : q.id)} className="text-sm text-violet-600 font-medium hover:text-violet-800 flex items-center gap-1">
                       <ChevronRight className={`w-3 h-3 transition-transform ${isExpanded ? "rotate-90" : ""}`} />
                       {isExpanded ? "Masquer la correction" : "Voir la correction"}
                     </button>
@@ -64,7 +64,7 @@ export default function QuestionsPage() {
                             </div>
                           ))}
                         </div>
-                        <div className="p-3 bg-blue-50 rounded-lg border border-blue-200">
+                        <div className="p-3 bg-violet-50 rounded-lg border border-violet-200">
                           <p className="text-sm text-gray-700 leading-relaxed">{q.explanation}</p>
                         </div>
                       </div>

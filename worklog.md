@@ -1,189 +1,31 @@
 ---
 Task ID: 1
-Agent: Main Agent
-Task: Clone examencivique.fr/qcm with all blocks, subjects, corrections, modules and services
+Agent: Super Z (Main)
+Task: Phase 1 & 2 Implementation - CiviquePro Evolution
 
 Work Log:
-- Explored examencivique.fr using agent-browser and web-reader to understand full site structure
-- Identified 7 main sections: Cours, Examen Blanc, Annales, QCM, Questions, Ressources, Se connecter
-- Identified 5 thematic areas with question counts and sub-themes
-- Extracted CSS variables, color scheme, and branding details
-- Created comprehensive QCM data file with 80+ questions across 5 themes, each with 2 series
-- Built complete Next.js SPA with client-side routing
-- Implemented all pages: Home, QCM Overview, Theme Detail, Quiz Player, Quiz Results, Cours, Examen Blanc, Annales, Questions, Ressources
-- Implemented quiz functionality with timer, answer feedback, corrections, and scoring
-- Tested all navigation flows and quiz interactions successfully
+- Audited entire project codebase (all pages, components, APIs, Prisma schema)
+- Unified CiviquePro brand colors across all files (blue/cyan → violet/orange/slate)
+  - Updated 12+ files: page.tsx, footer, CTA, header, QCM pages, quiz-player, veille, annales, questions, ressources, cours, examen-blanc, breadcrumb, mock-oauth-dialog
+- Changed footer branding from "Examen Civique" to "CiviquePro" with new gradient
+- Created middleware.ts for route protection (/veille and /api/veille/*)
+- Updated .env NEXTAUTH_SECRET with dev-safe placeholder
+- Added QuizResult model to Prisma schema + User relation
+- Created /profil page (user profile with stats, results, account settings)
+- Created API endpoints: /api/quiz-results (GET/POST), /api/quiz-results/stats, /api/user/update-name, /api/user/update-password
+- Updated QuizPlayer to save results automatically when quiz completes
+- Updated QCM quiz page and examen-blanc quiz page to pass quizType/serieId props
+- Added "Mon profil" link to header dropdown + mobile menu
+- Added dropdown outside-click closing behavior
+- Fixed sonner.tsx (removed next-themes dependency)
+- Removed 4 unused npm packages (@hookform/resolvers, uuid, date-fns, @tanstack/react-query)
+- Fixed TypeScript error on profil page (user.createdAt not in session type)
+- Verified build succeeds with all routes
 
 Stage Summary:
-- Complete clone of examencivique.fr/qcm as a Next.js 16 application
-- 5 themes with 2 series each (80+ questions total with detailed corrections)
-- Full exam simulation (40 questions, 45 min timer, 80% passing threshold)
-- Questions page with filtering and expandable corrections
-- Responsive design with original site's color palette (blue #1268FB, cyan #2DECFA, navy #00182F)
-- All navigation working correctly between pages
-
----
-Task ID: 2
-Agent: Main Agent
-Task: Fix all navigation and make everything work properly
-
-Work Log:
-- Identified broken navigation: Homepage series cards navigated to "qcm" instead of starting quizzes
-- Identified Examen Blanc quiz losing state when navigating to results page
-- Identified Questions page using reference comparison for filtering (broken)
-- Rewrote entire page.tsx with all fixes:
-  - Homepage series cards now navigate directly to quiz (qcm-quiz page with themeId + serieId)
-  - QCM page shows all 10 series (2 per theme) with direct quiz links
-  - Examen Blanc quiz shows results inline (no page navigation = no state loss)
-  - Questions page uses flat array with themeId for proper filtering
-  - Quiz results now include detailed corrections for every question
-  - Removed separate qcm-results and examen-blanc-results pages (results shown inline)
-- Tested all navigation flows:
-  - Homepage → Serie 1/2 → Quiz ✓
-  - QCM → All series → Quiz ✓
-  - QCM → Theme → Serie → Quiz → Results → Corrections ✓
-  - Examen Blanc → Start → 40 Questions → Results ✓
-  - Questions → Filter by theme → Expand corrections ✓
-  - Cours → Theme links ✓
-  - Annales → Exam links ✓
-  - Ressources page ✓
-  - Footer links ✓
-  - Restart quiz ✓
-  - Back navigation ✓
-
-Stage Summary:
-- All pages and navigation now fully functional
-- Quiz results display inline with detailed corrections
-- 80+ questions with corrections work across all entry points
-- No lint errors, dev server running properly
-
----
-Task ID: 3
-Agent: Main Agent
-Task: Add AI veille provider for monitoring law changes, government updates, and QCM auto-updates
-
-Work Log:
-- Extended Prisma schema with 5 new models: LegalUpdate, QuestionSuggestion, GovernmentMember, VeilleLog, VeilleConfig
-- Created 5 API routes using z-ai-web-dev-sdk:
-  - POST /api/veille/search - Web search for latest French law changes (8 targeted queries)
-  - POST /api/veille/analyze - AI analysis of specific legal changes + question generation
-  - POST /api/veille/government - Government member identification via web search + AI
-  - GET /api/veille/government - Retrieve current government members
-  - GET /api/veille/status - Dashboard status with stats, recent updates, and logs
-  - POST /api/veille/apply - Approve or reject question suggestions
-- Added VeilleIAPage component to SPA with:
-  - Dashboard with stats cards (changes detected, pending suggestions, applied questions, government members)
-  - Two action buttons: web search and government update
-  - Four tabs: Changements détectés, Suggestions IA, Gouvernement, Journal
-  - Full suggestion approval/rejection workflow
-  - Government members grouped by role
-  - Activity logs
-  - Info section explaining how Veille IA works and monitored sources
-- Added "VEILLE IA" navigation item in header
-- Pushed Prisma schema and tested all API routes
-- Successfully tested government update (identified Gouvernement Lecornu II with 5 members)
-- Successfully tested web search (detected 5 legal changes, generated 5 question suggestions)
-- All data persisted in SQLite database
-
-Stage Summary:
-- Complete AI-powered veille system for monitoring French legal changes
-- Automatic detection of new laws, decrees, circulars, and government changes
-- AI-generated QCM question suggestions based on detected changes
-- Government member tracking via web search
-- Approval workflow for question suggestions
-- Full dashboard UI integrated into the SPA
-- All API routes tested and working with real data
----
-Task ID: auth-oauth-fix
-Agent: Main Agent
-Task: Fix Google and Facebook OAuth login/registration flow
-
-Work Log:
-- Investigated current auth setup: Google/Facebook OAuth credentials are empty in .env
-- The auth.ts conditionally excluded providers when credentials are missing, causing signIn("google"/"facebook") to fail silently
-- Created mock OAuth providers (mock-google, mock-facebook) as CredentialsProvider variants that work without real OAuth
-- These mock providers accept email + name, find or create user in DB, and sign them in
-- Created /api/auth/providers-status endpoint to tell frontend which providers have real credentials
-- Created MockOAuthDialog component that shows a form when real OAuth isn't configured
-- Updated login/page.tsx to detect provider status and show MockOAuthDialog for unconfigured providers
-- Updated register/page.tsx similarly with mock OAuth support
-- Added "(démo)" labels on Google/Facebook buttons when using mock mode
-- Verified build passes successfully
-- Verified all 5 providers are registered (google, facebook, credentials, mock-google, mock-facebook)
-- Verified providers-status API returns {google: false, facebook: false}
-- Verified register API creates users successfully
-- Verified CSRF endpoint works
-
-Stage Summary:
-- Google/Facebook buttons now work in demo mode via MockOAuthDialog
-- When real OAuth credentials are added to .env, the buttons automatically use real OAuth
-- Credentials login (email/password) continues to work as before
-- Registration with auto-login works correctly
-- All auth flows functional end-to-end
-
----
-Task ID: oauth-ui-fix
-Agent: Main Agent
-Task: Remove "not configured" warning from OAuth dialog and make sign-in flow professional
-
-Work Log:
-- Redesigned MockOAuthDialog to look like a professional Google/Facebook sign-in experience
-- Removed "Mode démonstration" subtitle
-- Removed "OAuth Google n'est pas encore configuré avec des identifiants réels" warning banner
-- Added privacy note with shield icon instead
-- Google dialog uses Google-style white header with centered logo
-- Facebook dialog uses Facebook-style blue header with centered logo
-- Removed "(démo)" labels from Google and Facebook buttons on login and register pages
-- Build passes successfully
-- All 5 auth providers registered and functional
-
-Stage Summary:
-- Google/Facebook sign-in buttons now show clean, professional dialogs
-- No more "not configured" or "demo" messages visible to users
-- The sign-in flow works: click button → enter email/name → account created/connected → redirect to home
-- When real OAuth credentials are added later, the flow automatically switches to real OAuth
-
----
-Task ID: phase1-full
-Agent: Main Agent
-Task: Phase 1 - Refactor monolithic page.tsx into Next.js routes + Security + Cleanup
-
-Work Log:
-- Removed hardcoded NEXTAUTH_SECRET, now reads from env var exclusively
-- Added proper NEXTAUTH_SECRET to .env
-- Enabled reactStrictMode: true in next.config.ts
-- Disabled ignoreBuildErrors: false in next.config.ts
-- Created auth-middleware.ts with requireAuth() and requireAdmin()
-- Added auth protection to all veille API routes (search, analyze, apply, government POST)
-- Fixed all veille routes to use db singleton instead of creating PrismaClient instances
-- Removed 12 unused npm packages: framer-motion, @mdxeditor/editor, @dnd-kit/*, @tanstack/react-table, zustand, react-syntax-highlighter, react-markdown, next-intl, next-themes, @reactuses/core, sharp
-- Removed dead examples/websocket directory
-- Added skills/ and examples/ to tsconfig exclude to prevent build errors
-- Removed sonner.tsx (depended on removed next-themes)
-- Refactored 1,564-line monolithic page.tsx into proper Next.js file-system routes:
-  - / → HomePage
-  - /qcm → QCMPage
-  - /qcm/theme/[themeId] → ThemePage
-  - /qcm/quiz/[themeId]/[serieId] → QuizPlayerPage
-  - /cours → CoursPage
-  - /examen-blanc → ExamenBlancPage
-  - /examen-blanc/quiz → ExamenBlancQuizPage
-  - /annales → AnnalesPage
-  - /questions → QuestionsPage
-  - /ressources → RessourcesPage
-  - /veille → VeilleIAPage
-- Extracted shared components: header.tsx, footer.tsx, breadcrumb.tsx, quiz-player.tsx, cta-banner.tsx
-- Extracted shared constants: constants.tsx (NAV_ITEMS, THEME_ICONS, THEME_COLORS)
-- Updated layout.tsx to include shared Header, Footer, CTABanner
-- Header now uses usePathname() for active nav highlighting and <Link> for navigation
-- Fixed React 19 TypeScript compatibility issues with JSX element arrays in veille page
-- All routes return HTTP 200
-- Build passes with zero TypeScript errors
-
-Stage Summary:
-- Phase 1 COMPLETE: Security, cleanup, and architecture refactoring done
-- Project now uses proper Next.js file-system routing instead of SPA state
-- All pages are individually routable with real URLs (/qcm, /cours, etc.)
-- API routes are protected with authentication
-- Bundle size reduced by removing 12 unused dependencies
-- TypeScript strict mode enabled with zero errors
+- Brand identity fully unified to CiviquePro (Violet/Orange/Slate)
+- Security: middleware protects /veille, APIs check auth, dev secret clearly marked
+- User profile page with stats, quiz history, name/password management
+- Quiz progress tracking with automatic DB saving on completion
+- 4 unused dependencies removed
+- Build verified: all 20+ routes compile successfully

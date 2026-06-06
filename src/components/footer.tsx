@@ -9,8 +9,8 @@ export function Footer() {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
           <div className="col-span-2 md:col-span-1">
             <div className="flex items-center gap-2 mb-4">
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-600 to-cyan-500 flex items-center justify-center"><span className="text-white font-bold text-sm">EC</span></div>
-              <span className="font-bold text-white text-lg">Examen Civique</span>
+              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-violet-600 to-orange-400 flex items-center justify-center"><span className="text-white font-bold text-sm">CP</span></div>
+              <span className="font-bold text-white text-lg">CiviquePro</span>
             </div>
             <p className="text-sm leading-relaxed">Préparez-vous à l&apos;examen civique avec nos QCM, cours et examens blancs conformes au programme 2026.</p>
           </div>
@@ -43,7 +43,7 @@ export function Footer() {
         </div>
         <Separator className="my-8 bg-gray-800" />
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p className="text-xs text-gray-500">&copy; 2026 Examen Civique. Tous droits réservés.</p>
+          <p className="text-xs text-gray-500">&copy; 2026 CiviquePro. Tous droits réservés.</p>
           <span className="text-xs text-gray-500">Contenu mis à jour pour l&apos;EXAMEN CIVIQUE de 2026</span>
         </div>
       </div>

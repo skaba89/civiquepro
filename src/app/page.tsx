@@ -18,14 +18,14 @@ export default function HomePage() {
     <>
       {/* Hero */}
       <section className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-[#00182F] via-[#00224A] to-[#0C8E97]" />
+        <div className="absolute inset-0 bg-gradient-to-br from-slate-900 via-violet-900 to-violet-700" />
         <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-20 left-10 w-72 h-72 bg-cyan-400 rounded-full blur-3xl" />
-          <div className="absolute bottom-20 right-10 w-96 h-96 bg-blue-400 rounded-full blur-3xl" />
+          <div className="absolute top-20 left-10 w-72 h-72 bg-violet-400 rounded-full blur-3xl" />
+          <div className="absolute bottom-20 right-10 w-96 h-96 bg-orange-400 rounded-full blur-3xl" />
         </div>
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 py-16 sm:py-24">
           <div className="text-center max-w-3xl mx-auto">
-            <Badge className="mb-4 bg-cyan-500/20 text-cyan-300 border-cyan-500/30 hover:bg-cyan-500/30">Programme 2026 mis à jour</Badge>
+            <Badge className="mb-4 bg-violet-500/20 text-violet-300 border-violet-500/30 hover:bg-violet-500/30">Programme 2026 mis à jour</Badge>
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white mb-6 leading-tight" style={{ fontFamily: "var(--font-open-sans)" }}>
               QCM Examen Civique 2026 gratuits en ligne
             </h1>
@@ -34,7 +34,7 @@ export default function HomePage() {
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <Link href="/qcm">
-                <Button size="lg" className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-6 text-lg font-bold rounded-xl shadow-lg shadow-blue-600/25">
+                <Button size="lg" className="bg-violet-600 hover:bg-violet-700 text-white px-8 py-6 text-lg font-bold rounded-xl shadow-lg shadow-violet-600/25">
                   Démarrer un QCM <ArrowRight className="ml-2 w-5 h-5" />
                 </Button>
               </Link>
@@ -65,11 +65,11 @@ export default function HomePage() {
         <div className="grid md:grid-cols-2 gap-6 mb-8">
           {allThemes[0].series.map((serie, idx) => (
             <Link key={serie.id} href={`/qcm/quiz/${allThemes[0].id}/${serie.id}`}>
-              <Card className="border-2 hover:border-blue-600 transition-colors group cursor-pointer h-full">
+              <Card className="border-2 hover:border-violet-600 transition-colors group cursor-pointer h-full">
                 <CardHeader>
                   <div className="flex items-center justify-between">
-                    <Badge className="bg-blue-100 text-blue-700">Série n°{idx + 1}</Badge>
-                    <ArrowRight className="w-5 h-5 text-gray-400 group-hover:text-blue-600 transition-colors" />
+                    <Badge className="bg-violet-100 text-violet-700">Série n°{idx + 1}</Badge>
+                    <ArrowRight className="w-5 h-5 text-gray-400 group-hover:text-violet-600 transition-colors" />
                   </div>
                   <CardTitle className="text-xl mt-3" style={{ fontFamily: "var(--font-open-sans)" }}>QCM examen civique 2026 - Série n°{idx + 1}</CardTitle>
                   <CardDescription>{serie.questions.length} questions conformes au programme officiel, avec corrections détaillées.</CardDescription>
@@ -86,7 +86,7 @@ export default function HomePage() {
           ))}
         </div>
         <Link href="/qcm">
-          <Button variant="outline" className="w-full text-blue-600 border-blue-200 hover:bg-blue-50 font-semibold">
+          <Button variant="outline" className="w-full text-violet-600 border-violet-200 hover:bg-violet-50 font-semibold">
             Voir tous les QCM par thématique <ArrowRight className="ml-1 w-4 h-4" />
           </Button>
         </Link>
@@ -107,13 +107,13 @@ export default function HomePage() {
                   <Card className="cursor-pointer hover:shadow-lg transition-all group border-2 h-full">
                     <CardHeader>
                       <div className={`w-12 h-12 rounded-xl ${c.bg} text-white flex items-center justify-center mb-3`}>{THEME_ICONS[theme.id]}</div>
-                      <CardTitle className="text-lg group-hover:text-blue-600 transition-colors" style={{ fontFamily: "var(--font-open-sans)" }}>{theme.title}</CardTitle>
+                      <CardTitle className="text-lg group-hover:text-violet-600 transition-colors" style={{ fontFamily: "var(--font-open-sans)" }}>{theme.title}</CardTitle>
                       <CardDescription>{theme.description}</CardDescription>
                     </CardHeader>
                     <CardContent>
                       <div className="flex items-center justify-between">
                         <Badge variant="secondary" className={`${c.light} ${c.text}`}>{theme.questionCount} questions</Badge>
-                        <ArrowRight className="w-4 h-4 text-gray-400 group-hover:text-blue-600 transition-colors" />
+                        <ArrowRight className="w-4 h-4 text-gray-400 group-hover:text-violet-600 transition-colors" />
                       </div>
                     </CardContent>
                   </Card>
@@ -157,10 +157,10 @@ export default function HomePage() {
                         <td className="py-3 px-2 text-gray-500 text-xs hidden sm:table-cell">{theme.pointsVigilance}</td>
                       </tr>
                     ))}
-                    <tr className="bg-blue-50 font-semibold">
+                    <tr className="bg-violet-50 font-semibold">
                       <td className="py-3 px-2">Total</td>
                       <td className="py-3 px-2 text-center">40</td>
-                      <td className="py-3 px-2 text-xs text-blue-700 hidden sm:table-cell">Seuil de réussite : 32/40 (80 %)</td>
+                      <td className="py-3 px-2 text-xs text-violet-700 hidden sm:table-cell">Seuil de réussite : 32/40 (80 %)</td>
                     </tr>
                   </tbody>
                 </table>

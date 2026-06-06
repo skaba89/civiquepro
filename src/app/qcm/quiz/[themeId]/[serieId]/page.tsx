@@ -24,6 +24,8 @@ export default function QuizPlayerPage() {
       title={serie.title}
       onBack={() => router.push(`/qcm/theme/${themeId}`)}
       themeId={themeId}
+      serieId={serieId}
+      quizType="qcm"
     />
   );
 }

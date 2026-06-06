@@ -175,8 +175,8 @@ export function MockOAuthDialog({ provider, isOpen, onClose }: MockOAuthDialogPr
               type="submit"
               className={`flex-1 h-11 font-semibold rounded-lg text-white shadow-md ${
                 provider === "google"
-                  ? "bg-blue-600 hover:bg-blue-700 shadow-blue-200"
-                  : "bg-[#1877F2] hover:bg-[#166FE5] shadow-blue-200"
+                  ? "bg-violet-600 hover:bg-violet-700 shadow-violet-200"
+                  : "bg-[#1877F2] hover:bg-[#166FE5] shadow-violet-200"
               }`}
               disabled={loading}
             >

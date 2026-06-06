@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useRef } from "react";
+import { useSession } from "next-auth/react";
 import { type Question, EXAM_CONFIG } from "@/lib/qcm-data";
 import { THEME_COLORS } from "@/lib/constants";
 import { Button } from "@/components/ui/button";
@@ -18,16 +19,20 @@ interface QuizPlayerProps {
   title: string;
   onBack: () => void;
   themeId?: string;
+  serieId?: string;
+  quizType?: string;  // "qcm" | "examen-blanc" | "theme"
   isExamBlanc?: boolean;
 }
 
-export function QuizPlayer({ questions, title, onBack, themeId, isExamBlanc = false }: QuizPlayerProps) {
+export function QuizPlayer({ questions, title, onBack, themeId, serieId, quizType, isExamBlanc = false }: QuizPlayerProps) {
+  const { data: session } = useSession();
   const [currentIdx, setCurrentIdx] = useState(0);
   const [answers, setAnswers] = useState<(number | null)[]>(() => new Array(questions.length).fill(null));
   const [showExplanation, setShowExplanation] = useState(false);
   const [timeLeft, setTimeLeft] = useState(EXAM_CONFIG.timeLimit);
   const [isFinished, setIsFinished] = useState(false);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const hasSavedRef = useRef(false);
 
   const colors = themeId ? THEME_COLORS[themeId] : THEME_COLORS["principes-valeurs"];
   const question = questions[currentIdx];
@@ -48,6 +53,32 @@ export function QuizPlayer({ questions, title, onBack, themeId, isExamBlanc = fa
     }, 1000);
     return () => { if (timerRef.current) clearInterval(timerRef.current); };
   }, []);
+
+  // Save result when quiz is finished
+  React.useEffect(() => {
+    if (isFinished && !hasSavedRef.current && session?.user) {
+      hasSavedRef.current = true;
+      const correct = answers.filter((a, i) => a === questions[i].correctAnswer).length;
+      const score = Math.round((correct / questions.length) * 100);
+      const timeUsed = EXAM_CONFIG.timeLimit - timeLeft;
+
+      fetch("/api/quiz-results", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          quizType: quizType || (isExamBlanc ? "examen-blanc" : "qcm"),
+          themeId: themeId || null,
+          serieId: serieId || null,
+          totalQuestions: questions.length,
+          correctAnswers: correct,
+          score,
+          passed: score >= EXAM_CONFIG.passingPercent,
+          timeUsed,
+          answers: answers.reduce((acc: Record<number, number | null>, a, i) => { acc[i] = a; return acc; }, {}),
+        }),
+      }).catch(err => console.error("Erreur sauvegarde résultat:", err));
+    }
+  }, [isFinished]);
 
   const formatTime = (s: number) => `${Math.floor(s / 60).toString().padStart(2, "0")}:${(s % 60).toString().padStart(2, "0")}`;
 
@@ -82,6 +113,7 @@ export function QuizPlayer({ questions, title, onBack, themeId, isExamBlanc = fa
     setShowExplanation(false);
     setTimeLeft(EXAM_CONFIG.timeLimit);
     setIsFinished(false);
+    hasSavedRef.current = false;
   };
 
   const correct = answers.filter((a, i) => a === questions[i].correctAnswer).length;
@@ -111,12 +143,12 @@ export function QuizPlayer({ questions, title, onBack, themeId, isExamBlanc = fa
             <div className="grid grid-cols-3 gap-4 mb-8">
               <div className="p-4 bg-green-50 rounded-xl"><div className="text-2xl font-bold text-green-600">{correct}</div><div className="text-xs text-gray-600">Correctes</div></div>
               <div className="p-4 bg-red-50 rounded-xl"><div className="text-2xl font-bold text-red-600">{incorrect}</div><div className="text-xs text-gray-600">Incorrectes</div></div>
-              <div className="p-4 bg-blue-50 rounded-xl"><div className="text-2xl font-bold text-blue-600">{formatTime(timeUsed)}</div><div className="text-xs text-gray-600">Temps utilisé</div></div>
+              <div className="p-4 bg-violet-50 rounded-xl"><div className="text-2xl font-bold text-violet-600">{formatTime(timeUsed)}</div><div className="text-xs text-gray-600">Temps utilisé</div></div>
             </div>
 
             <div className="flex gap-4 justify-center mb-8">
               <Button variant="outline" onClick={onBack} className="font-semibold"><ChevronLeft className="mr-2 w-4 h-4" /> Retour</Button>
-              <Button onClick={handleRestart} className="bg-blue-600 hover:bg-blue-700 text-white font-semibold"><RotateCcw className="mr-2 w-4 h-4" /> Recommencer</Button>
+              <Button onClick={handleRestart} className="bg-violet-600 hover:bg-violet-700 text-white font-semibold"><RotateCcw className="mr-2 w-4 h-4" /> Recommencer</Button>
             </div>
 
             {/* Detailed corrections */}
@@ -162,7 +194,7 @@ export function QuizPlayer({ questions, title, onBack, themeId, isExamBlanc = fa
         </div>
       </div>
 
-      <Progress value={((currentIdx + 1) / questions.length) * 100} className="h-2 mb-8 [&>div]:bg-blue-600" />
+      <Progress value={((currentIdx + 1) / questions.length) * 100} className="h-2 mb-8 [&>div]:bg-violet-600" />
 
       <Card className="border-2 mb-6">
         <CardHeader>
@@ -177,7 +209,7 @@ export function QuizPlayer({ questions, title, onBack, themeId, isExamBlanc = fa
         <CardContent>
           <div className="space-y-3">
             {question.options.map((option, idx) => {
-              let optStyle = "border-2 border-gray-200 hover:border-blue-400 hover:bg-blue-50 cursor-pointer";
+              let optStyle = "border-2 border-gray-200 hover:border-violet-400 hover:bg-violet-50 cursor-pointer";
               if (isAnswered) {
                 if (idx === question.correctAnswer) optStyle = "border-2 border-green-500 bg-green-50 cursor-default";
                 else if (idx === selectedAnswer) optStyle = "border-2 border-red-500 bg-red-50 cursor-default";
@@ -224,7 +256,7 @@ export function QuizPlayer({ questions, title, onBack, themeId, isExamBlanc = fa
           {questions.map((_, i) => (
             <button key={i} onClick={() => { setCurrentIdx(i); setShowExplanation(answers[i] !== null); }}
               className={`w-8 h-8 rounded-lg text-xs font-semibold transition-all ${
-                i === currentIdx ? "bg-blue-600 text-white" :
+                i === currentIdx ? "bg-violet-600 text-white" :
                 answers[i] !== null ? (answers[i] === questions[i].correctAnswer ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700") :
                 "bg-gray-100 text-gray-500 hover:bg-gray-200"
               }`}>
@@ -232,7 +264,7 @@ export function QuizPlayer({ questions, title, onBack, themeId, isExamBlanc = fa
             </button>
           ))}
         </div>
-        <Button onClick={handleNext} className="bg-blue-600 hover:bg-blue-700 text-white font-semibold">
+        <Button onClick={handleNext} className="bg-violet-600 hover:bg-violet-700 text-white font-semibold">
           {currentIdx === questions.length - 1 ? "Terminer" : "Suivant"} <ChevronRight className="ml-1 w-4 h-4" />
         </Button>
       </div>
