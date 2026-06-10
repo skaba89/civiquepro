@@ -45,7 +45,10 @@ export default function LoginPage() {
   // Check which OAuth providers are configured
   useEffect(() => {
     fetch("/api/auth/providers-status")
-      .then((res) => res.json())
+      .then((res) => {
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return res.json();
+      })
       .then((data) => setProviderStatus(data))
       .catch(() => {});
   }, []);

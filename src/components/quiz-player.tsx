@@ -76,6 +76,8 @@ export function QuizPlayer({ questions, title, onBack, themeId, serieId, quizTyp
           timeUsed,
           answers: answers.reduce((acc: Record<number, number | null>, a, i) => { acc[i] = a; return acc; }, {}),
         }),
+      }).then(res => {
+        if (!res.ok) console.error("Erreur sauvegarde résultat: HTTP", res.status);
       }).catch(err => console.error("Erreur sauvegarde résultat:", err));
     }
   }, [isFinished]);

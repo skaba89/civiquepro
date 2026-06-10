@@ -47,6 +47,7 @@ export default function VeilleIAPage() {
   const fetchStatus = async () => {
     try {
       const res = await fetch("/api/veille/status");
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
       setStatus(data);
     } catch (err) {
@@ -57,6 +58,7 @@ export default function VeilleIAPage() {
   const fetchGovernment = async () => {
     try {
       const res = await fetch("/api/veille/government");
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
       if (data.members) setGovMembers(data.members);
     } catch (err) {
@@ -75,6 +77,7 @@ export default function VeilleIAPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ forceRefresh: true }),
       });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
       setSearchResult(data);
       await fetchStatus();
@@ -90,6 +93,7 @@ export default function VeilleIAPage() {
     setLoading("government");
     try {
       const res = await fetch("/api/veille/government", { method: "POST" });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
       await fetchGovernment();
       await fetchStatus();

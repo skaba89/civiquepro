@@ -148,7 +148,12 @@ export function AuthDialog({ open, onOpenChange, defaultMode = "login" }: AuthDi
         }),
       });
 
-      const data = await res.json();
+      let data;
+      try {
+        data = await res.json();
+      } catch {
+        throw new Error("Erreur serveur - réponse invalide");
+      }
 
       if (!res.ok) {
         setError(data.error || "Erreur lors de la création du compte");

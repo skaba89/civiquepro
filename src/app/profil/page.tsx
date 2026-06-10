@@ -64,7 +64,10 @@ export default function ProfilePage() {
   useEffect(() => {
     if (isAuthenticated) {
       fetch("/api/quiz-results")
-        .then(res => res.json())
+        .then(res => {
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          return res.json();
+        })
         .then(data => {
           setResults(data.results || []);
           setLoadingResults(false);
