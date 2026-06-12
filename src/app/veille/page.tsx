@@ -12,7 +12,8 @@ import {
   FileText, ArrowRight,
   Lightbulb, Bot, Shield,
   Zap, Eye, ThumbsUp, ThumbsDown, Globe, FileCheck, Users,
-  RefreshCw, Scale, Landmark,
+  RefreshCw, Scale, Landmark, Clock, Calendar, Activity,
+  Bell, Newspaper, Building2,
 } from "lucide-react";
 
 interface VeilleStatus {
@@ -42,7 +43,9 @@ export default function VeilleIAPage() {
   const [govMembers, setGovMembers] = useState<GovMember[]>([]);
   const [loading, setLoading] = useState<string | null>(null);
   const [searchResult, setSearchResult] = useState<Record<string, unknown> | null>(null);
-  const [activeTab, setActiveTab] = useState<"dashboard" | "suggestions" | "government" | "logs">("dashboard");
+  const [activeTab, setActiveTab] = useState<"dashboard" | "suggestions" | "government" | "digest" | "logs">("dashboard");
+  const [cronStatus, setCronStatus] = useState<{ hoursSinceLastRun: number; veilleRecommended: boolean; lastCronRun: string | null } | null>(null);
+  const [digest, setDigest] = useState<Record<string, unknown> | null>(null);
 
   const fetchStatus = async () => {
     try {
@@ -66,7 +69,51 @@ export default function VeilleIAPage() {
     }
   };
 
-  React.useEffect(() => { fetchStatus(); fetchGovernment(); }, []);
+  React.useEffect(() => { fetchStatus(); fetchGovernment(); fetchCronStatus(); }, []);
+
+  const fetchCronStatus = async () => {
+    try {
+      const res = await fetch("/api/veille/cron");
+      if (res.ok) {
+        const data = await res.json();
+        setCronStatus(data);
+      }
+    } catch { /* ignore */ }
+  };
+
+  const handleFullVeille = async () => {
+    setLoading("cron");
+    setSearchResult(null);
+    try {
+      const res = await fetch("/api/veille/cron", { method: "POST" });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+      setSearchResult(data);
+      await fetchStatus();
+      await fetchGovernment();
+      await fetchCronStatus();
+    } catch (err) {
+      console.error("Erreur veille auto:", err);
+      setSearchResult({ status: "error", message: "Erreur lors de la veille automatique" });
+    } finally {
+      setLoading(null);
+    }
+  };
+
+  const handleDigest = async () => {
+    setLoading("digest");
+    try {
+      const res = await fetch("/api/veille/digest");
+      if (res.ok) {
+        const data = await res.json();
+        setDigest(data);
+      }
+    } catch (err) {
+      console.error("Erreur digest:", err);
+    } finally {
+      setLoading(null);
+    }
+  };
 
   const handleSearch = async () => {
     setLoading("search");
@@ -120,7 +167,8 @@ export default function VeilleIAPage() {
 
   const categoryLabels: Record<string, string> = {
     loi: "Loi", circulaire: "Circulaire", decret: "Décret",
-    gouvernement: "Gouvernement", jurisprudence: "Jurisprudence", institutionnel: "Institutionnel"
+    gouvernement: "Gouvernement", jurisprudence: "Jurisprudence", institutionnel: "Institutionnel",
+    administratif: "Administratif"
   };
   const impactColors: Record<string, { bg: string; text: string }> = {
     low: { bg: "bg-gray-100", text: "text-gray-700" },
@@ -194,7 +242,34 @@ export default function VeilleIAPage() {
       })()}
 
       {/* Action Buttons */}
-      <div className="grid sm:grid-cols-2 gap-4 mb-8">
+      <div className="grid sm:grid-cols-3 gap-4 mb-8">
+        {/* Veille automatique complète */}
+        <Card className="border-2 hover:border-orange-400 transition-all cursor-pointer bg-gradient-to-br from-orange-50 to-violet-50" onClick={handleFullVeille}>
+          <CardContent className="py-6">
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-orange-500 to-violet-600 text-white flex items-center justify-center shrink-0">
+                {loading === "cron" ? <RefreshCw className="w-6 h-6 animate-spin" /> : <Activity className="w-6 h-6" />}
+              </div>
+              <div className="flex-1">
+                <div className="flex items-center gap-2">
+                  <h3 className="font-bold text-gray-900">Veille automatique</h3>
+                  {cronStatus?.veilleRecommended && (
+                    <Badge className="bg-red-100 text-red-700 text-xs animate-pulse">
+                      <Bell className="w-3 h-3 mr-1" />Recommandée
+                    </Badge>
+                  )}
+                </div>
+                <p className="text-sm text-gray-500">Scan complet : lois, gouvernement, sources officielles</p>
+                <p className="text-xs text-gray-400 mt-1">
+                  {cronStatus?.lastCronRun
+                    ? `Dernière veille : il y a ${cronStatus.hoursSinceLastRun}h`
+                    : "Jamais exécutée"}
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+        {/* Recherche web simple */}
         <Card className="border-2 hover:border-violet-400 transition-all cursor-pointer" onClick={handleSearch}>
           <CardContent className="py-6">
             <div className="flex items-center gap-4">
@@ -202,14 +277,15 @@ export default function VeilleIAPage() {
                 {loading === "search" ? <RefreshCw className="w-6 h-6 animate-spin" /> : <Globe className="w-6 h-6" />}
               </div>
               <div className="flex-1">
-                <h3 className="font-bold text-gray-900">Lancer la recherche web</h3>
-                <p className="text-sm text-gray-500">Recherche les dernières lois, circulaires et réformes</p>
-                <p className="text-xs text-gray-400 mt-1">Dernière recherche : {formatDate(status?.lastSearch ?? null)}</p>
+                <h3 className="font-bold text-gray-900">Recherche web</h3>
+                <p className="text-sm text-gray-500">Lois, circulaires et réformes</p>
+                <p className="text-xs text-gray-400 mt-1">Dernière : {formatDate(status?.lastSearch ?? null)}</p>
               </div>
               <ArrowRight className="w-5 h-5 text-gray-400" />
             </div>
           </CardContent>
         </Card>
+        {/* Gouvernement */}
         <Card className="border-2 hover:border-purple-400 transition-all cursor-pointer" onClick={handleGovUpdate}>
           <CardContent className="py-6">
             <div className="flex items-center gap-4">
@@ -217,9 +293,9 @@ export default function VeilleIAPage() {
                 {loading === "government" ? <RefreshCw className="w-6 h-6 animate-spin" /> : <Shield className="w-6 h-6" />}
               </div>
               <div className="flex-1">
-                <h3 className="font-bold text-gray-900">Mettre à jour le gouvernement</h3>
-                <p className="text-sm text-gray-500">Identifie les membres actuels du gouvernement</p>
-                <p className="text-xs text-gray-400 mt-1">Dernière mise à jour : {formatDate(status?.lastGovernmentUpdate ?? null)}</p>
+                <h3 className="font-bold text-gray-900">Gouvernement</h3>
+                <p className="text-sm text-gray-500">Membres actuels du gouvernement</p>
+                <p className="text-xs text-gray-400 mt-1">Dernière màj : {formatDate(status?.lastGovernmentUpdate ?? null)}</p>
               </div>
               <ArrowRight className="w-5 h-5 text-gray-400" />
             </div>
@@ -248,15 +324,22 @@ export default function VeilleIAPage() {
       <div className="flex gap-2 mb-6 border-b border-gray-200 pb-3 overflow-x-auto">
         <button onClick={() => setActiveTab("dashboard")}
           className={`flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-lg whitespace-nowrap transition-colors ${activeTab === "dashboard" ? "bg-violet-600 text-white" : "text-gray-600 hover:bg-gray-100"}`}>
-          <Eye className="w-4 h-4" />Changements détectés
+          <Eye className="w-4 h-4" />Changements
         </button>
         <button onClick={() => setActiveTab("suggestions")}
           className={`flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-lg whitespace-nowrap transition-colors ${activeTab === "suggestions" ? "bg-violet-600 text-white" : "text-gray-600 hover:bg-gray-100"}`}>
           <Lightbulb className="w-4 h-4" />Suggestions IA
+          {status?.stats.pendingSuggestions ? (
+            <Badge className="bg-orange-100 text-orange-700 text-xs ml-1">{status.stats.pendingSuggestions}</Badge>
+          ) : null}
         </button>
-        <button onClick={() => setActiveTab("government")}
+        <button onClick={() => { setActiveTab("government"); }}
           className={`flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-lg whitespace-nowrap transition-colors ${activeTab === "government" ? "bg-violet-600 text-white" : "text-gray-600 hover:bg-gray-100"}`}>
           <Users className="w-4 h-4" />Gouvernement
+        </button>
+        <button onClick={() => { setActiveTab("digest"); handleDigest(); }}
+          className={`flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-lg whitespace-nowrap transition-colors ${activeTab === "digest" ? "bg-violet-600 text-white" : "text-gray-600 hover:bg-gray-100"}`}>
+          <Newspaper className="w-4 h-4" />Résumé hebdo
         </button>
         <button onClick={() => setActiveTab("logs")}
           className={`flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-lg whitespace-nowrap transition-colors ${activeTab === "logs" ? "bg-violet-600 text-white" : "text-gray-600 hover:bg-gray-100"}`}>
@@ -372,6 +455,141 @@ export default function VeilleIAPage() {
                 </Card>
               );
             })
+          )}
+        </div>
+      )}
+
+      {/* Tab: Résumé hebdomadaire */}
+      {activeTab === "digest" && (
+        <div className="space-y-6">
+          {loading === "digest" ? (
+            <div className="animate-pulse space-y-4">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="h-32 bg-gray-200 rounded-xl" />
+              ))}
+            </div>
+          ) : digest ? (
+            <>
+              {/* Période */}
+              <div className="flex items-center gap-2 text-sm text-gray-500">
+                <Calendar className="w-4 h-4" />
+                Semaine du {digest.period ? new Date(digest.period as string).toLocaleDateString("fr-FR", { day: "2-digit", month: "long", year: "numeric" }) : "..."} au {new Date().toLocaleDateString("fr-FR", { day: "2-digit", month: "long", year: "numeric" })}
+              </div>
+
+              {/* Résumé exécutif IA */}
+              {((digest as Record<string, unknown>).aiDigest as Record<string, unknown>)?.executiveSummary && (
+                <Card className="border-2 border-violet-200 bg-gradient-to-br from-violet-50 to-orange-50">
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2 text-lg">
+                      <Bot className="w-5 h-5 text-violet-600" />
+                      Résumé exécutif IA
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-gray-700 leading-relaxed">{((digest as Record<string, unknown>).aiDigest as Record<string, unknown>).executiveSummary as string}</p>
+                  </CardContent>
+                </Card>
+              )}
+
+              {/* Stats de la semaine */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                <div className="p-4 rounded-xl bg-violet-50 border">
+                  <div className="text-xs text-gray-500 mb-1">Nouveaux changements</div>
+                  <div className="text-2xl font-bold text-gray-900">{(digest.summary as Record<string, number>)?.newUpdatesThisWeek ?? 0}</div>
+                </div>
+                <div className="p-4 rounded-xl bg-amber-50 border">
+                  <div className="text-xs text-gray-500 mb-1">Suggestions en attente</div>
+                  <div className="text-2xl font-bold text-gray-900">{(digest.summary as Record<string, number>)?.pendingSuggestions ?? 0}</div>
+                </div>
+                <div className="p-4 rounded-xl bg-green-50 border">
+                  <div className="text-xs text-gray-500 mb-1">Approuvées cette semaine</div>
+                  <div className="text-2xl font-bold text-gray-900">{(digest.summary as Record<string, number>)?.approvedThisWeek ?? 0}</div>
+                </div>
+                <div className="p-4 rounded-xl bg-blue-50 border">
+                  <div className="text-xs text-gray-500 mb-1">Sources officielles</div>
+                  <div className="text-2xl font-bold text-gray-900">{(digest.summary as Record<string, number>)?.officialSourcesCount ?? 0}</div>
+                </div>
+              </div>
+
+              {/* Changements critiques */}
+              {((digest as Record<string, unknown>).criticalUpdates as Array<Record<string, unknown>>)?.length > 0 && (
+                <Card className="border-2 border-red-200">
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2 text-lg text-red-700">
+                      <Zap className="w-5 h-5" />
+                      Changements critiques
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    {((digest as Record<string, unknown>).criticalUpdates as Array<Record<string, unknown>>).map((update, i) => (
+                      <div key={i} className="flex items-start gap-3 p-3 bg-red-50 rounded-lg">
+                        <AlertCircle className="w-5 h-5 text-red-500 shrink-0 mt-0.5" />
+                        <div>
+                          <p className="font-medium text-gray-900">{update.title as string}</p>
+                          <p className="text-sm text-gray-600">{update.description as string}</p>
+                          <div className="flex gap-2 mt-2">
+                            <Badge className="bg-red-100 text-red-700 text-xs">{update.impact as string}</Badge>
+                            <Badge variant="secondary" className="text-xs">{update.category as string}</Badge>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </CardContent>
+                </Card>
+              )}
+
+              {/* Actions requises par l'IA */}
+              {((digest as Record<string, unknown>).aiDigest as Record<string, unknown>)?.actionsRequired && (
+                <Card className="border-2 border-amber-200">
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2 text-lg">
+                      <Bell className="w-5 h-5 text-amber-600" />
+                      Actions requises
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <ul className="space-y-2">
+                      {(((digest as Record<string, unknown>).aiDigest as Record<string, unknown>).actionsRequired as string[]).map((action, i) => (
+                        <li key={i} className="flex items-start gap-2 text-sm text-gray-700">
+                          <ArrowRight className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
+                          {action}
+                        </li>
+                      ))}
+                    </ul>
+                  </CardContent>
+                </Card>
+              )}
+
+              {/* Tendances */}
+              {((digest as Record<string, unknown>).aiDigest as Record<string, unknown>)?.trends && (
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2 text-lg">
+                      <Activity className="w-5 h-5 text-violet-600" />
+                      Tendances à surveiller
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <ul className="space-y-2">
+                      {(((digest as Record<string, unknown>).aiDigest as Record<string, unknown>).trends as string[]).map((trend, i) => (
+                        <li key={i} className="flex items-start gap-2 text-sm text-gray-700">
+                          <ArrowRight className="w-4 h-4 text-violet-500 shrink-0 mt-0.5" />
+                          {trend}
+                        </li>
+                      ))}
+                    </ul>
+                  </CardContent>
+                </Card>
+              )}
+            </>
+          ) : (
+            <Card className="border-2 border-dashed">
+              <CardContent className="py-12 text-center">
+                <Newspaper className="w-12 h-12 text-gray-300 mx-auto mb-4" />
+                <h3 className="text-lg font-semibold text-gray-500 mb-2">Résumé hebdomadaire</h3>
+                <p className="text-gray-400 text-sm max-w-md mx-auto">Cliquez sur l&apos;onglet pour charger le résumé IA des évolutions de la semaine.</p>
+              </CardContent>
+            </Card>
           )}
         </div>
       )}
@@ -494,22 +712,28 @@ export default function VeilleIAPage() {
           </CardHeader>
           <CardContent className="space-y-2">
             <div className="flex items-center gap-3 p-2 bg-white rounded-lg border border-amber-200">
-              <FileText className="w-4 h-4 text-violet-600" /><span className="text-sm text-gray-700">Nouvelles lois et réformes législatives</span>
+              <Landmark className="w-4 h-4 text-violet-600" /><span className="text-sm text-gray-700"><strong>legifrance.gouv.fr</strong> — Lois, décrets, circulaires officiels</span>
             </div>
             <div className="flex items-center gap-3 p-2 bg-white rounded-lg border border-amber-200">
-              <FileCheck className="w-4 h-4 text-green-600" /><span className="text-sm text-gray-700">Circulaires et décrets d&apos;application</span>
+              <FileText className="w-4 h-4 text-violet-600" /><span className="text-sm text-gray-700"><strong>vie-publique.fr</strong> — Résumés officiels des textes</span>
             </div>
             <div className="flex items-center gap-3 p-2 bg-white rounded-lg border border-amber-200">
-              <Users className="w-4 h-4 text-purple-600" /><span className="text-sm text-gray-700">Remaniements gouvernementaux</span>
+              <FileCheck className="w-4 h-4 text-green-600" /><span className="text-sm text-gray-700"><strong>service-public.gouv.fr</strong> — Fiches pratiques</span>
             </div>
             <div className="flex items-center gap-3 p-2 bg-white rounded-lg border border-amber-200">
-              <Scale className="w-4 h-4 text-indigo-600" /><span className="text-sm text-gray-700">Jurisprudence du Conseil d&apos;État et de la Cour de cassation</span>
+              <Building2 className="w-4 h-4 text-blue-600" /><span className="text-sm text-gray-700"><strong>ofii.fr</strong> — Office Français de l&apos;Immigration et de l&apos;Intégration</span>
             </div>
             <div className="flex items-center gap-3 p-2 bg-white rounded-lg border border-amber-200">
-              <Landmark className="w-4 h-4 text-amber-600" /><span className="text-sm text-gray-700">Réformes constitutionnelles et institutionnelles</span>
+              <Users className="w-4 h-4 text-purple-600" /><span className="text-sm text-gray-700">Remaniements et composition du gouvernement</span>
             </div>
             <div className="flex items-center gap-3 p-2 bg-white rounded-lg border border-amber-200">
-              <Globe className="w-4 h-4 text-cyan-600" /><span className="text-sm text-gray-700">Évolutions du droit de l&apos;immigration et de l&apos;asile</span>
+              <Scale className="w-4 h-4 text-indigo-600" /><span className="text-sm text-gray-700">Jurisprudence Conseil d&apos;État et Cour de cassation</span>
+            </div>
+            <div className="flex items-center gap-3 p-2 bg-white rounded-lg border border-amber-200">
+              <Globe className="w-4 h-4 text-cyan-600" /><span className="text-sm text-gray-700">Droit de l&apos;immigration, asile, naturalisation</span>
+            </div>
+            <div className="flex items-center gap-3 p-2 bg-white rounded-lg border border-amber-200">
+              <Clock className="w-4 h-4 text-orange-600" /><span className="text-sm text-gray-700">Veille automatique toutes les <strong>6 heures</strong> (cron)</span>
             </div>
           </CardContent>
         </Card>
