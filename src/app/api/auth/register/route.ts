@@ -1,12 +1,18 @@
 import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { db } from "@/lib/db";
+import { sanitizeName, sanitizeEmail, safeParseJSON } from "@/lib/sanitize";
 
 export async function POST(req: NextRequest) {
   try {
-    const body = await req.json();
-    const { name, email, password } = body;
+    const { data, error: parseError } = await safeParseJSON(req);
+    if (parseError || !data) {
+      return NextResponse.json({ error: parseError }, { status: 400 });
+    }
 
+    const { name, email, password } = data as { name: unknown; email: unknown; password: unknown };
+
+    // Validate required fields
     if (!name || !email || !password) {
       return NextResponse.json(
         { error: "Tous les champs sont requis" },
@@ -14,23 +20,34 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    if (password.length < 6) {
+    // Sanitize name
+    const sanitizedName = sanitizeName(name);
+    if (!sanitizedName) {
       return NextResponse.json(
-        { error: "Le mot de passe doit contenir au moins 6 caractères" },
+        { error: "Le nom est invalide (vide, trop long, ou contient des caractères interdits)" },
         { status: 400 }
       );
     }
 
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
+    // Sanitize and validate email
+    const sanitizedEmail = sanitizeEmail(email);
+    if (!sanitizedEmail) {
       return NextResponse.json(
         { error: "Adresse email invalide" },
         { status: 400 }
       );
     }
 
+    // Validate password
+    if (typeof password !== 'string' || password.length < 8) {
+      return NextResponse.json(
+        { error: "Le mot de passe doit contenir au moins 8 caractères" },
+        { status: 400 }
+      );
+    }
+
     const existingUser = await db.user.findUnique({
-      where: { email },
+      where: { email: sanitizedEmail },
     });
 
     if (existingUser) {
@@ -44,8 +61,8 @@ export async function POST(req: NextRequest) {
 
     const user = await db.user.create({
       data: {
-        name,
-        email,
+        name: sanitizedName,
+        email: sanitizedEmail,
         password: hashedPassword,
       },
     });

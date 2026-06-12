@@ -295,12 +295,7 @@ export default function LoginPage() {
                 <Label htmlFor="password" className="text-sm font-medium text-gray-700">
                   Mot de passe <span className="text-red-500">*</span>
                 </Label>
-                <button
-                  type="button"
-                  className="text-xs text-violet-600 hover:text-violet-700 font-medium hover:underline"
-                >
-                  Mot de passe oublié ?
-                </button>
+                <span className="text-xs text-gray-400 font-medium cursor-default" title="Fonctionnalité à venir">Mot de passe oublié ?</span>
               </div>
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
@@ -319,6 +314,7 @@ export default function LoginPage() {
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                  aria-label={showPassword ? "Masquer le mot de passe" : "Afficher le mot de passe"}
                 >
                   {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>

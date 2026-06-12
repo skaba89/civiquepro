@@ -147,7 +147,25 @@ export default function ProfilePage() {
     );
   }
 
-  if (!isAuthenticated || !user) return null;
+  if (!isAuthenticated || !user) {
+    return (
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
+        <Breadcrumb items={[{ label: "Accueil", href: "/" }, { label: "Mon Profil" }]} />
+        <div className="flex flex-col items-center justify-center py-20">
+          <User className="w-16 h-16 text-gray-300 mb-4" />
+          <h1 className="text-2xl font-bold text-gray-900 mb-2">Connexion requise</h1>
+          <p className="text-gray-500 mb-6 text-center">
+            Vous devez être connecté pour accéder à votre profil et suivre votre progression.
+          </p>
+          <Link href="/login?callbackUrl=/profil">
+            <Button className="bg-violet-600 hover:bg-violet-700 text-white font-semibold">
+              Se connecter
+            </Button>
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   // Calculate stats
   const totalQuizzes = results.length;

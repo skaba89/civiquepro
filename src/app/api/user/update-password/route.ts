@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { db } from "@/lib/db";
 import bcrypt from "bcryptjs";
+import { safeParseJSON } from "@/lib/sanitize";
 
 export async function POST(request: Request) {
   try {
@@ -12,7 +13,12 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
     }
 
-    const { currentPassword, newPassword } = await request.json();
+    const { data, error: parseError } = await safeParseJSON(request);
+    if (parseError || !data) {
+      return NextResponse.json({ error: parseError }, { status: 400 });
+    }
+
+    const { currentPassword, newPassword } = data as { currentPassword: unknown; newPassword: unknown };
 
     if (!currentPassword || !newPassword) {
       return NextResponse.json(
@@ -21,9 +27,17 @@ export async function POST(request: Request) {
       );
     }
 
-    if (newPassword.length < 8) {
+    if (typeof newPassword !== 'string' || newPassword.length < 8) {
       return NextResponse.json(
         { error: "Le nouveau mot de passe doit contenir au moins 8 caractères." },
+        { status: 400 }
+      );
+    }
+
+    // Check that new password differs from current
+    if (currentPassword === newPassword) {
+      return NextResponse.json(
+        { error: "Le nouveau mot de passe doit être différent de l'actuel." },
         { status: 400 }
       );
     }
@@ -48,7 +62,7 @@ export async function POST(request: Request) {
     }
 
     // Verify current password
-    const isValid = await bcrypt.compare(currentPassword, user.password);
+    const isValid = await bcrypt.compare(currentPassword as string, user.password);
     if (!isValid) {
       return NextResponse.json(
         { error: "Le mot de passe actuel est incorrect." },
@@ -57,7 +71,7 @@ export async function POST(request: Request) {
     }
 
     // Hash and save new password
-    const hashedPassword = await bcrypt.hash(newPassword, 12);
+    const hashedPassword = await bcrypt.hash(newPassword as string, 12);
     await db.user.update({
       where: { id: user.id },
       data: { password: hashedPassword },
@@ -71,4 +85,9 @@ export async function POST(request: Request) {
       { status: 500 }
     );
   }
+}
+
+// Also support PUT method (API contract compliance)
+export async function PUT(request: Request) {
+  return POST(request);
 }

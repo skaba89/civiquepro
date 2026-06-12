@@ -48,3 +48,15 @@ Stage Summary:
 - Taux de reussite: 80.2% global (50% frontend, 86.3% backend)
 - Securite: SQL injection OK, XSS vulnerable, auth OK, rate limiting absent
 - Fichier .env recurrentement incomplet - recommande .env.example + check au demarrage
+
+---
+Task ID: 2
+Agent: Main Agent
+Task: Correction des anomalies QA E2E - Toutes les corrections appliquees et validees
+
+Stage Summary:
+- 5/5 CRITICAL fixes: XSS, /profil middleware, /profil content, PUT handlers, env
+- 7/7 MAJOR fixes: quiz validation, password policy, name trim, JSON 400, dead buttons, auth layout, 404 French
+- 5/5 MINOR fixes: SEO metadata, aria-labels, .env.example
+- All backend tests passing: XSS sanitized, empty name rejected, 8+ char password, JSON 400, PUT supported, /profil 307, 404 French
+

@@ -6,16 +6,16 @@ export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // Routes that require authentication
-  const protectedRoutes = ["/veille"];
+  const protectedRoutes = ["/veille", "/profil"];
   const protectedApiRoutes = ["/api/veille"];
 
   const isProtectedRoute = protectedRoutes.some(route => pathname.startsWith(route));
   const isProtectedApiRoute = protectedApiRoutes.some(route => pathname.startsWith(route));
 
   if (isProtectedRoute || isProtectedApiRoute) {
-    const token = await getToken({ 
-      req: request, 
-      secret: process.env.NEXTAUTH_SECRET 
+    const token = await getToken({
+      req: request,
+      secret: process.env.NEXTAUTH_SECRET
     });
 
     if (!token) {
@@ -32,5 +32,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/veille/:path*", "/api/veille/:path*"],
+  matcher: ["/veille/:path*", "/api/veille/:path*", "/profil/:path*"],
 };

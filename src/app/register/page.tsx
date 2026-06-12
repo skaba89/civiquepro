@@ -58,8 +58,8 @@ export default function RegisterPage() {
   // Password strength
   const getPasswordStrength = (pwd: string) => {
     let score = 0;
-    if (pwd.length >= 6) score++;
     if (pwd.length >= 8) score++;
+    if (pwd.length >= 12) score++;
     if (/[A-Z]/.test(pwd)) score++;
     if (/[0-9]/.test(pwd)) score++;
     if (/[^A-Za-z0-9]/.test(pwd)) score++;
@@ -80,8 +80,8 @@ export default function RegisterPage() {
       return;
     }
 
-    if (password.length < 6) {
-      setError("Le mot de passe doit contenir au moins 6 caractères");
+    if (password.length < 8) {
+      setError("Le mot de passe doit contenir au moins 8 caractères");
       return;
     }
 
@@ -352,7 +352,7 @@ export default function RegisterPage() {
                 <Input
                   id="reg-password"
                   type={showPassword ? "text" : "password"}
-                  placeholder="6 caractères minimum"
+                  placeholder="8 caractères minimum"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className="h-12 pl-10 pr-10 rounded-lg border-gray-300 focus:border-violet-500 focus:ring-violet-500/20"
@@ -419,9 +419,9 @@ export default function RegisterPage() {
               />
               <Label htmlFor="terms" className="text-sm text-gray-600 cursor-pointer leading-relaxed">
                 J&apos;accepte les{" "}
-                <button type="button" className="text-violet-600 hover:underline">conditions d&apos;utilisation</button>
+                <span className="text-violet-400 cursor-default" title="Bientôt disponible">conditions d&apos;utilisation</span>
                 {" "}et la{" "}
-                <button type="button" className="text-violet-600 hover:underline">politique de confidentialité</button>
+                <span className="text-violet-400 cursor-default" title="Bientôt disponible">politique de confidentialité</span>
               </Label>
             </div>
 

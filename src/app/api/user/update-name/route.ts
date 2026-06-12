@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { db } from "@/lib/db";
+import { sanitizeName, safeParseJSON } from "@/lib/sanitize";
 
 export async function POST(request: Request) {
   try {
@@ -11,18 +12,25 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
     }
 
-    const { name } = await request.json();
+    const { data, error: parseError } = await safeParseJSON(request);
+    if (parseError || !data) {
+      return NextResponse.json({ error: parseError }, { status: 400 });
+    }
 
-    if (!name || typeof name !== "string" || !name.trim()) {
+    const { name } = data as { name: unknown };
+
+    // Sanitize and validate name
+    const sanitizedName = sanitizeName(name);
+    if (!sanitizedName) {
       return NextResponse.json(
-        { error: "Le nom est requis." },
+        { error: "Le nom est invalide (vide, trop long, ou contient des caractères interdits)" },
         { status: 400 }
       );
     }
 
     const user = await db.user.update({
       where: { email: session.user.email },
-      data: { name: name.trim() },
+      data: { name: sanitizedName },
     });
 
     return NextResponse.json({
@@ -36,4 +44,9 @@ export async function POST(request: Request) {
       { status: 500 }
     );
   }
+}
+
+// Also support PUT method (API contract compliance)
+export async function PUT(request: Request) {
+  return POST(request);
 }

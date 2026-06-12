@@ -34,7 +34,7 @@ export default function CoursPage() {
                     ))}
                     {course.lessons.length > 3 && <span className="text-xs text-violet-600 font-medium">+ {course.lessons.length - 3} leçons</span>}
                   </div>
-                  <Button variant="outline" className={`w-full ${c.text} border-current text-sm`}>Accéder au cours <ArrowRight className="ml-1 w-4 h-4" /></Button>
+                  <Button variant="outline" className={`w-full ${c.text} border-current text-sm`}>Accéder aux QCM <ArrowRight className="ml-1 w-4 h-4" /></Button>
                 </CardContent>
               </Card>
             </Link>
