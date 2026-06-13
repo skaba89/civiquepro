@@ -60,3 +60,34 @@ Stage Summary:
 - 5/5 MINOR fixes: SEO metadata, aria-labels, .env.example
 - All backend tests passing: XSS sanitized, empty name rejected, 8+ char password, JSON 400, PUT supported, /profil 307, 404 French
 
+
+---
+Task ID: 3
+Agent: Main Agent
+Task: Préparation au déploiement production Render/Netlify + Neon PostgreSQL
+
+Work Log:
+- Évalué la readiness production : 7 bloqueurs critiques identifiés
+- Migré Prisma schema : créé prisma/schema.production.prisma (provider=postgresql) + conservé sqlite pour dev local
+- Ajouté script build:prod qui swap le schema PostgreSQL avant le build
+- Désactivé mock-google et mock-facebook en production (guard NODE_ENV)
+- Branché PrismaAdapter dans NextAuth (package @auth/prisma-adapter déjà installé mais non utilisé)
+- Retiré allowDangerousEmailAccountLinking des providers OAuth configurés
+- Ajouté "postinstall": "prisma generate" dans package.json (critique pour Render/Netlify)
+- Ajouté "db:migrate:prod": "prisma migrate deploy" pour les migrations production
+- Corrigé .env et .env.example avec placeholders Neon PostgreSQL
+- Rendu le logging Prisma conditionnel : ['query'] en dev, ['error'] en prod
+- Déplacé prisma CLI de dependencies → devDependencies (-50MB image prod)
+- Créé Dockerfile multi-stage (deps → builder → runner) avec user non-root
+- Créé .dockerignore pour optimiser le build
+- Créé render.yaml blueprint (web service + env vars + build/start commands)
+- Ajouté mode streaming (SSE) sur /api/veille/cron et /api/veille/search (?stream=true)
+- Ajouté validation des variables d'environnement critiques au démarrage dans db.ts
+- Build final vérifié : compile en 6.2s, 28 pages statiques, 0 erreur
+
+Stage Summary:
+- 7/7 bloqueurs critiques résolus
+- Dockerfile + render.yaml prêts pour le déploiement
+- Routes veille compatibles serverless via streaming SSE
+- Validation env vars au démarrage empêche les déploiements cassés
+- Build production propre : ✓ Compiled successfully
