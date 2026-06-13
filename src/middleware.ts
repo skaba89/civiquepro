@@ -6,12 +6,12 @@ export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // Routes that require authentication (any logged-in user)
-  const protectedRoutes = ["/veille", "/profil", "/cours", "/qcm", "/examen-blanc", "/questions"];
+  const protectedRoutes = ["/veille", "/profil", "/cours", "/qcm", "/examen-blanc", "/questions", "/annales"];
   const protectedApiRoutes = ["/api/veille", "/api/quiz-results", "/api/user"];
 
   // Routes that require admin role
   const adminRoutes = ["/veille"];
-  const adminApiRoutes = ["/api/veille/cron", "/api/veille/search", "/api/veille/apply", "/api/veille/analyze"];
+  const adminApiRoutes = ["/api/veille/cron", "/api/veille/search", "/api/veille/apply", "/api/veille/analyze", "/api/veille/government"];
 
   const isProtectedRoute = protectedRoutes.some(route => pathname.startsWith(route));
   const isProtectedApiRoute = protectedApiRoutes.some(route => pathname.startsWith(route));
@@ -49,5 +49,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/veille/:path*", "/api/veille/:path*", "/api/quiz-results/:path*", "/api/user/:path*", "/profil/:path*", "/cours/:path*", "/qcm/:path*", "/examen-blanc/:path*", "/questions/:path*"],
+  matcher: ["/veille/:path*", "/api/veille/:path*", "/api/quiz-results/:path*", "/api/user/:path*", "/profil/:path*", "/cours/:path*", "/qcm/:path*", "/examen-blanc/:path*", "/questions/:path*", "/annales/:path*"],
 };

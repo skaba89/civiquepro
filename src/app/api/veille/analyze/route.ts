@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import ZAI from "z-ai-web-dev-sdk";
 import { db } from "@/lib/db";
-import { requireAuth } from "@/lib/auth-middleware";
+import { requireAdmin } from "@/lib/auth-middleware";
 
 
 // Analyse IA d'un changement juridique spécifique et génération de questions
 export async function POST(req: NextRequest) {
-  const { error: authError } = await requireAuth(req);
+  const { error: authError } = await requireAdmin(req);
   if (authError) return authError;
 
   const startTime = Date.now();
@@ -19,6 +19,23 @@ export async function POST(req: NextRequest) {
     if (!legalUpdateId || !themeId) {
       return NextResponse.json(
         { status: "error", message: "legalUpdateId et themeId requis" },
+        { status: 400 }
+      );
+    }
+
+    // Validate legalUpdateId format (cuid)
+    if (typeof legalUpdateId !== 'string' || !legalUpdateId.startsWith('c') || legalUpdateId.length > 30) {
+      return NextResponse.json(
+        { status: "error", message: "legalUpdateId invalide" },
+        { status: 400 }
+      );
+    }
+
+    // Validate themeId against allowed values
+    const validThemeIds = ["principes-valeurs", "droits-devoirs", "histoire-geographie", "systeme-institutionnel", "vivre-societe"];
+    if (!validThemeIds.includes(themeId)) {
+      return NextResponse.json(
+        { status: "error", message: "themeId invalide" },
         { status: 400 }
       );
     }
@@ -156,7 +173,7 @@ Réponds en JSON uniquement :
     console.error("Veille analyze error:", errorMessage);
     
     return NextResponse.json(
-      { status: "error", message: errorMessage },
+      { status: "error", message: "Erreur interne du serveur" },
       { status: 500 }
     );
   }

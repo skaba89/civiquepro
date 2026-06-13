@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import ZAI from "z-ai-web-dev-sdk";
 import { db } from "@/lib/db";
-import { requireAuth } from "@/lib/auth-middleware";
+import { requireAdmin } from "@/lib/auth-middleware";
 
 /**
  * POST /api/veille/cron
@@ -15,7 +15,7 @@ import { requireAuth } from "@/lib/auth-middleware";
  * - Without stream, returns complete JSON response (may timeout on serverless)
  */
 export async function POST(req: NextRequest) {
-  const { error: authError } = await requireAuth(req);
+  const { error: authError } = await requireAdmin(req);
   if (authError) return authError;
 
   const isStreaming = req.nextUrl.searchParams.get("stream") === "true";
@@ -781,12 +781,15 @@ Réponds en JSON : { "members": [{ "name": "...", "role": "...", "ministry": "..
       }
     });
 
-    return NextResponse.json({ status: "error", message: errorMessage, results }, { status: 500 });
+    return NextResponse.json({ status: "error", message: "Erreur interne du serveur", results: { errors: results.errors } }, { status: 500 });
   }
 }
 
 // GET: Statut du cron
-export async function GET() {
+export async function GET(req: NextRequest) {
+  const { error: authError } = await requireAdmin(req);
+  if (authError) return authError;
+
   try {
     const lastCron = await db.veilleConfig.findUnique({ where: { key: "last_cron_run" } });
     const lastSearch = await db.veilleConfig.findUnique({ where: { key: "last_search" } });
@@ -814,8 +817,9 @@ export async function GET() {
       recentLogs,
     });
   } catch (error: unknown) {
+    console.error("Veille cron GET error:", error instanceof Error ? error.message : "Erreur inconnue");
     return NextResponse.json(
-      { status: "error", message: error instanceof Error ? error.message : "Erreur inconnue" },
+      { status: "error", message: "Erreur interne du serveur" },
       { status: 500 }
     );
   }

@@ -25,6 +25,14 @@ export function Header() {
     return () => document.removeEventListener("mousedown", handleClick);
   }, [showUserMenu]);
 
+  // Filter nav items based on role — hide veille from non-admins
+  const isAdmin = (user as { role?: string })?.role === "admin";
+  const visibleNavItems = NAV_ITEMS.filter(item => {
+    if (item.id === "veille") return isAuthenticated && isAdmin;
+    if (["cours", "qcm", "examen-blanc", "questions"].includes(item.id)) return isAuthenticated;
+    return true;
+  });
+
   const isActive = (id: string, href: string) => {
     if (id === "qcm") {
       return pathname.startsWith("/qcm");
@@ -43,7 +51,7 @@ export function Header() {
             <span className="font-bold text-lg text-gray-900 hidden sm:block" style={{ fontFamily: "var(--font-open-sans)" }}>CiviquePro</span>
           </Link>
           <nav className="hidden lg:flex items-center gap-1">
-            {NAV_ITEMS.map((item) => (
+            {visibleNavItems.map((item) => (
               <Link key={item.id} href={item.href}
                 className={`px-3 py-2 text-sm font-semibold rounded-lg transition-colors ${
                   isActive(item.id, item.href)
@@ -126,7 +134,7 @@ export function Header() {
         {mobileMenuOpen && (
           <div className="lg:hidden pb-4 border-t border-gray-100 mt-2 pt-4">
             <nav className="flex flex-col gap-1">
-              {NAV_ITEMS.map((item) => (
+              {visibleNavItems.map((item) => (
                 <Link key={item.id} href={item.href} onClick={() => setMobileMenuOpen(false)}
                   className={`px-4 py-3 text-sm font-semibold rounded-lg text-left ${isActive(item.id, item.href) ? "text-violet-600 bg-violet-50" : "text-gray-600 hover:bg-gray-50"}`}>
                   {item.label}

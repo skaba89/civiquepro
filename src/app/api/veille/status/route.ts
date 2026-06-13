@@ -1,9 +1,14 @@
 import { NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import { db } from "@/lib/db";
+import { requireAuth } from "@/lib/auth-middleware";
 
 
 // Statut de la veille IA
-export async function GET() {
+export async function GET(req: NextRequest) {
+  const { error: authError } = await requireAuth(req);
+  if (authError) return authError;
+
   try {
     // Dernières recherches
     const lastSearch = await db.veilleConfig.findUnique({ where: { key: "last_search" } });
@@ -70,9 +75,9 @@ export async function GET() {
       recentLogs,
     });
   } catch (error: unknown) {
-    const errorMessage = error instanceof Error ? error.message : "Erreur inconnue";
+    console.error("Veille status error:", error instanceof Error ? error.message : "Erreur inconnue");
     return NextResponse.json(
-      { status: "error", message: errorMessage },
+      { status: "error", message: "Erreur interne du serveur" },
       { status: 500 }
     );
   }

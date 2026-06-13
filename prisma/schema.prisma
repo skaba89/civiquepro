@@ -29,6 +29,8 @@ model User {
   sessions Session[]
   posts    Post[]
   results  QuizResult[]
+
+  @@index([role])
 }
 
 model Account {
@@ -87,7 +89,7 @@ model QuizResult {
   id            String   @id @default(cuid())
   userId        String
   user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
+
   quizType      String   // "qcm" | "examen-blanc" | "theme"
   themeId       String?  // For theme-specific quizzes
   serieId       String?  // For specific series
@@ -103,6 +105,9 @@ model QuizResult {
   completedAt   DateTime @default(now())
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
+
+  @@index([userId])
+  @@index([quizType])
 }
 
 // ============================================================
@@ -126,6 +131,11 @@ model LegalUpdate {
   updatedAt   DateTime @updatedAt
 
   suggestions QuestionSuggestion[]
+
+  @@index([status])
+  @@index([category])
+  @@index([impact])
+  @@index([createdAt])
 }
 
 model QuestionSuggestion {
@@ -148,6 +158,9 @@ model QuestionSuggestion {
   appliedAt     DateTime?
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
+
+  @@index([legalUpdateId])
+  @@index([status])
 }
 
 model GovernmentMember {
@@ -161,6 +174,8 @@ model GovernmentMember {
   endDate   DateTime?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@index([active])
 }
 
 model VeilleLog {
@@ -171,6 +186,9 @@ model VeilleLog {
   resultsCount Int     @default(0)
   duration    Int      @default(0)  // Durée en ms
   createdAt   DateTime @default(now())
+
+  @@index([action])
+  @@index([createdAt])
 }
 
 model VeilleConfig {

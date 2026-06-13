@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import ZAI from "z-ai-web-dev-sdk";
 import { db } from "@/lib/db";
-import { requireAuth } from "@/lib/auth-middleware";
+import { requireAdmin } from "@/lib/auth-middleware";
 
 /**
  * POST /api/veille/search
@@ -12,7 +12,7 @@ import { requireAuth } from "@/lib/auth-middleware";
  * - Without stream, returns complete JSON response (may timeout on serverless)
  */
 export async function POST(req: NextRequest) {
-  const { error: authError } = await requireAuth(req);
+  const { error: authError } = await requireAdmin(req);
   if (authError) return authError;
 
   const isStreaming = req.nextUrl.searchParams.get("stream") === "true";
@@ -20,7 +20,7 @@ export async function POST(req: NextRequest) {
 
   // Parse body
   const body = await req.json().catch(() => ({}));
-  const forceRefresh = body.forceRefresh || false;
+  const forceRefresh = typeof body.forceRefresh === 'boolean' ? body.forceRefresh : false;
 
   // Vérifier si une recherche récente existe (< 6h)
   if (!forceRefresh) {
@@ -492,12 +492,12 @@ Réponds en JSON uniquement avec ce format :
       data: {
         action: "search",
         status: "error",
-        details: errorMessage,
+        details: `Erreur interne`,
       }
     });
 
     return NextResponse.json(
-      { status: "error", message: errorMessage },
+      { status: "error", message: "Erreur interne du serveur" },
       { status: 500 }
     );
   }

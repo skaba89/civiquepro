@@ -24,15 +24,22 @@ export async function requireAuth(req: NextRequest) {
 
 /**
  * Check if the current request is from an admin user.
- * For now, any authenticated user is considered admin.
- * In production, add a `role` field to the User model.
+ * Checks the role field from the JWT session.
  */
 export async function requireAdmin(req: NextRequest) {
   const result = await requireAuth(req);
 
   if (result.error) return result;
 
-  // TODO: Check user.role === "admin" when role field is added
-  // For now, all authenticated users can access admin features
+  if ((result.session?.user as { role?: string })?.role !== "admin") {
+    return {
+      session: null,
+      error: NextResponse.json(
+        { error: "Accès réservé aux administrateurs" },
+        { status: 403 }
+      ),
+    };
+  }
+
   return result;
 }

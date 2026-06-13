@@ -34,6 +34,13 @@ export async function POST(request: Request) {
       );
     }
 
+    if (newPassword.length > 128) {
+      return NextResponse.json(
+        { error: "Le nouveau mot de passe est trop long." },
+        { status: 400 }
+      );
+    }
+
     // Check that new password differs from current
     if (currentPassword === newPassword) {
       return NextResponse.json(

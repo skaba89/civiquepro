@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
-import { requireAuth } from "@/lib/auth-middleware";
+import { requireAdmin } from "@/lib/auth-middleware";
 
 
 // Appliquer ou rejeter une suggestion de question
 export async function POST(req: NextRequest) {
-  const { error: authError } = await requireAuth(req);
+  const { error: authError } = await requireAdmin(req);
   if (authError) return authError;
 
   try {
@@ -15,6 +15,22 @@ export async function POST(req: NextRequest) {
     if (!suggestionId || !action) {
       return NextResponse.json(
         { status: "error", message: "suggestionId et action (approve/reject) requis" },
+        { status: 400 }
+      );
+    }
+
+    // Validate suggestionId format (cuid)
+    if (typeof suggestionId !== 'string' || !suggestionId.startsWith('c') || suggestionId.length > 30) {
+      return NextResponse.json(
+        { status: "error", message: "suggestionId invalide" },
+        { status: 400 }
+      );
+    }
+
+    // Validate action against allowed values
+    if (!['approve', 'reject'].includes(action)) {
+      return NextResponse.json(
+        { status: "error", message: "Action invalide. Utilisez 'approve' ou 'reject'" },
         { status: 400 }
       );
     }
@@ -71,7 +87,8 @@ export async function POST(req: NextRequest) {
         themeId: suggestion.themeId,
       });
 
-    } else if (action === "reject") {
+    } else {
+      // action === "reject" (validated above)
       await db.questionSuggestion.update({
         where: { id: suggestionId },
         data: {
@@ -84,18 +101,13 @@ export async function POST(req: NextRequest) {
         status: "rejected",
         suggestionId,
       });
-
-    } else {
-      return NextResponse.json(
-        { status: "error", message: "Action invalide. Utilisez 'approve' ou 'reject'" },
-        { status: 400 }
-      );
     }
 
   } catch (error: unknown) {
     const errorMessage = error instanceof Error ? error.message : "Erreur inconnue";
+    console.error("Veille apply error:", errorMessage);
     return NextResponse.json(
-      { status: "error", message: errorMessage },
+      { status: "error", message: "Erreur interne du serveur" },
       { status: 500 }
     );
   }
