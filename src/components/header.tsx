@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 import { NAV_ITEMS } from "@/lib/constants";
 import { useAuth } from "@/components/auth-provider";
 import { Button } from "@/components/ui/button";
-import { Menu, X, LogOut, User as UserIcon } from "lucide-react";
+import { Menu, X, LogOut, User as UserIcon, Shield } from "lucide-react";
 
 export function Header() {
   const { user, isAuthenticated, signOut } = useAuth();
@@ -84,6 +84,15 @@ export function Header() {
                     >
                       <UserIcon className="w-4 h-4" /> Mon profil
                     </Link>
+                    {(user as { role?: string }).role === "admin" && (
+                      <Link
+                        href="/veille"
+                        onClick={() => { setShowUserMenu(false); }}
+                        className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-amber-700 hover:bg-amber-50 transition-colors"
+                      >
+                        <Shield className="w-4 h-4" /> Administration
+                      </Link>
+                    )}
                     <button
                       onClick={() => { setShowUserMenu(false); signOut({ callbackUrl: "/" }); }}
                       className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors"
@@ -141,6 +150,15 @@ export function Header() {
                   >
                     <UserIcon className="w-4 h-4" /> Mon profil
                   </Link>
+                  {(user as { role?: string }).role === "admin" && (
+                    <Link
+                      href="/veille"
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="flex items-center gap-2 px-4 py-3 text-sm font-semibold rounded-lg text-amber-700 hover:bg-amber-50"
+                    >
+                      <Shield className="w-4 h-4" /> Administration
+                    </Link>
+                  )}
                   <button
                     onClick={() => { setMobileMenuOpen(false); signOut({ callbackUrl: "/" }); }}
                     className="mt-2 flex items-center justify-center gap-2 px-4 py-3 bg-red-50 text-red-600 rounded-lg text-sm font-semibold"
