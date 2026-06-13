@@ -25,12 +25,14 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-# Switch to PostgreSQL schema for production build
-RUN cp prisma/schema.production.prisma prisma/schema.prisma
-
-# Set production environment
+# Build-time environment variables (placeholders — real values injected at runtime)
+# These are needed so Next.js can evaluate modules during build
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV NODE_ENV=production
+ENV NEXT_PHASE=phase-production-build
+ENV DATABASE_URL=postgresql://placeholder:placeholder@placeholder/neondb?sslmode=require
+ENV NEXTAUTH_SECRET=build-placeholder-secret
+ENV NEXTAUTH_URL=http://localhost:3000
 
 # Build the application
 RUN npm run build
