@@ -62,3 +62,4 @@ server.log
 
 # Worklog (local only)
 worklog.md
+tool-results/

@@ -46,6 +46,13 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    if (password.length > 128) {
+      return NextResponse.json(
+        { error: "Le mot de passe est trop long" },
+        { status: 400 }
+      );
+    }
+
     const existingUser = await db.user.findUnique({
       where: { email: sanitizedEmail },
     });

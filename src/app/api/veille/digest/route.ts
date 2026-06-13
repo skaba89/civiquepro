@@ -150,11 +150,11 @@ Réponds en JSON : { "executiveSummary": "...", "criticalChanges": ["..."], "act
       })),
       recentLogs,
     });
-
   } catch (error: unknown) {
     const errorMessage = error instanceof Error ? error.message : "Erreur inconnue";
+    console.error("Veille digest error:", errorMessage);
     return NextResponse.json(
-      { status: "error", message: errorMessage },
+      { status: "error", message: "Erreur interne du serveur" },
       { status: 500 }
     );
   }

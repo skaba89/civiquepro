@@ -4,6 +4,14 @@
  */
 
 /**
+ * Check if a string contains HTML tags — if so, it should be REJECTED, not sanitized.
+ * This prevents confusing UX where "<script>alert(1)</script>" becomes "alert(1)" stored in DB.
+ */
+function containsHtmlTags(input: string): boolean {
+  return /<[^>]*>/.test(input);
+}
+
+/**
  * Strip all HTML tags and encode dangerous characters from a string.
  * Prevents stored XSS by ensuring no HTML/JS can be injected via text fields.
  */
@@ -21,10 +29,13 @@ export function sanitizeText(input: string): string {
 
 /**
  * Validate and sanitize a name field.
+ * REJECTS input containing HTML tags (returns null).
  * Returns null if invalid, sanitized string if valid.
  */
 export function sanitizeName(name: unknown): string | null {
   if (typeof name !== 'string') return null;
+  // REJECT any input containing HTML tags — don't try to sanitize malicious input
+  if (containsHtmlTags(name)) return null;
   const sanitized = sanitizeText(name);
   if (!sanitized || sanitized.length === 0) return null;
   if (sanitized.length > 100) return null;  // Max 100 chars

@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 import { NAV_ITEMS } from "@/lib/constants";
 import { useAuth } from "@/components/auth-provider";
 import { Button } from "@/components/ui/button";
-import { Menu, X, LogOut, User as UserIcon } from "lucide-react";
+import { Menu, X, LogOut, User as UserIcon, Shield } from "lucide-react";
 
 export function Header() {
   const { user, isAuthenticated, signOut } = useAuth();
@@ -24,6 +24,14 @@ export function Header() {
     document.addEventListener("mousedown", handleClick);
     return () => document.removeEventListener("mousedown", handleClick);
   }, [showUserMenu]);
+
+  // Filter nav items based on role — hide veille from non-admins
+  const isAdmin = (user as { role?: string })?.role === "admin";
+  const visibleNavItems = NAV_ITEMS.filter(item => {
+    if (item.id === "veille") return isAuthenticated && isAdmin;
+    if (["cours", "qcm", "examen-blanc", "questions"].includes(item.id)) return isAuthenticated;
+    return true;
+  });
 
   const isActive = (id: string, href: string) => {
     if (id === "qcm") {
@@ -43,7 +51,7 @@ export function Header() {
             <span className="font-bold text-lg text-gray-900 hidden sm:block" style={{ fontFamily: "var(--font-open-sans)" }}>CiviquePro</span>
           </Link>
           <nav className="hidden lg:flex items-center gap-1">
-            {NAV_ITEMS.map((item) => (
+            {visibleNavItems.map((item) => (
               <Link key={item.id} href={item.href}
                 className={`px-3 py-2 text-sm font-semibold rounded-lg transition-colors ${
                   isActive(item.id, item.href)
@@ -84,6 +92,15 @@ export function Header() {
                     >
                       <UserIcon className="w-4 h-4" /> Mon profil
                     </Link>
+                    {(user as { role?: string }).role === "admin" && (
+                      <Link
+                        href="/veille"
+                        onClick={() => { setShowUserMenu(false); }}
+                        className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-amber-700 hover:bg-amber-50 transition-colors"
+                      >
+                        <Shield className="w-4 h-4" /> Administration
+                      </Link>
+                    )}
                     <button
                       onClick={() => { setShowUserMenu(false); signOut({ callbackUrl: "/" }); }}
                       className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors"
@@ -117,7 +134,7 @@ export function Header() {
         {mobileMenuOpen && (
           <div className="lg:hidden pb-4 border-t border-gray-100 mt-2 pt-4">
             <nav className="flex flex-col gap-1">
-              {NAV_ITEMS.map((item) => (
+              {visibleNavItems.map((item) => (
                 <Link key={item.id} href={item.href} onClick={() => setMobileMenuOpen(false)}
                   className={`px-4 py-3 text-sm font-semibold rounded-lg text-left ${isActive(item.id, item.href) ? "text-violet-600 bg-violet-50" : "text-gray-600 hover:bg-gray-50"}`}>
                   {item.label}
@@ -141,6 +158,15 @@ export function Header() {
                   >
                     <UserIcon className="w-4 h-4" /> Mon profil
                   </Link>
+                  {(user as { role?: string }).role === "admin" && (
+                    <Link
+                      href="/veille"
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="flex items-center gap-2 px-4 py-3 text-sm font-semibold rounded-lg text-amber-700 hover:bg-amber-50"
+                    >
+                      <Shield className="w-4 h-4" /> Administration
+                    </Link>
+                  )}
                   <button
                     onClick={() => { setMobileMenuOpen(false); signOut({ callbackUrl: "/" }); }}
                     className="mt-2 flex items-center justify-center gap-2 px-4 py-3 bg-red-50 text-red-600 rounded-lg text-sm font-semibold"

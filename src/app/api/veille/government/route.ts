@@ -1,11 +1,14 @@
-import { NextResponse } from "next/server";
+import { NextResponse, NextRequest } from "next/server";
 import ZAI from "z-ai-web-dev-sdk";
 import { db } from "@/lib/db";
-import { requireAuth } from "@/lib/auth-middleware";
+import { requireAuth, requireAdmin } from "@/lib/auth-middleware";
 
 
 // Mise à jour des membres du gouvernement via recherche web
-export async function POST() {
+export async function POST(req: NextRequest) {
+  const { error: authError } = await requireAdmin(req);
+  if (authError) return authError;
+
   const startTime = Date.now();
 
   try {
@@ -144,19 +147,22 @@ Réponds en JSON uniquement :
       data: {
         action: "government_update",
         status: "error",
-        details: errorMessage,
+        details: `Erreur interne`,
       }
     });
 
     return NextResponse.json(
-      { status: "error", message: errorMessage },
+      { status: "error", message: "Erreur interne du serveur" },
       { status: 500 }
     );
   }
 }
 
 // GET: Récupérer les membres actuels du gouvernement
-export async function GET() {
+export async function GET(req: NextRequest) {
+  const { error: authError } = await requireAuth(req);
+  if (authError) return authError;
+
   try {
     const members = await db.governmentMember.findMany({
       where: { active: true },
@@ -170,8 +176,9 @@ export async function GET() {
     });
   } catch (error: unknown) {
     const errorMessage = error instanceof Error ? error.message : "Erreur inconnue";
+    console.error("Government GET error:", errorMessage);
     return NextResponse.json(
-      { status: "error", message: errorMessage },
+      { status: "error", message: "Erreur interne du serveur" },
       { status: 500 }
     );
   }

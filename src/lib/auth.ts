@@ -102,6 +102,7 @@ providers.push(
         name: user.name || "",
         email: user.email,
         image: user.image || null,
+        role: user.role,
       };
     },
   })
@@ -213,10 +214,12 @@ export const authOptions: NextAuthOptions = {
         token.name = user.name;
         token.email = user.email;
         token.picture = user.image;
+        token.role = (user as { role?: string }).role || "user";
       }
       if (account) {
         token.provider = account.provider;
       }
+      // Always refresh role from DB on token update
       if (trigger === "update" && token.email) {
         const dbUser = await db.user.findUnique({
           where: { email: token.email },
@@ -224,6 +227,16 @@ export const authOptions: NextAuthOptions = {
         if (dbUser) {
           token.name = dbUser.name;
           token.picture = dbUser.image;
+          token.role = dbUser.role;
+        }
+      }
+      // Ensure role is always populated (first login via OAuth may not have it)
+      if (!token.role && token.email) {
+        const dbUser = await db.user.findUnique({
+          where: { email: token.email as string },
+        });
+        if (dbUser) {
+          token.role = dbUser.role;
         }
       }
       return token;
@@ -234,6 +247,7 @@ export const authOptions: NextAuthOptions = {
         session.user.name = token.name as string;
         session.user.email = token.email as string;
         session.user.image = token.picture as string || null;
+        (session.user as { role?: string }).role = token.role as string || "user";
       }
       return session;
     },

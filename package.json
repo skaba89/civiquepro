@@ -13,7 +13,11 @@
     "db:migrate": "prisma migrate dev",
     "db:migrate:prod": "prisma migrate deploy",
     "db:reset": "prisma migrate reset",
+    "db:seed": "npx tsx prisma/seed.ts",
     "build:prod": "cp prisma/schema.production.prisma prisma/schema.prisma && next build && cp -r .next/static .next/standalone/.next/ && cp -r public .next/standalone/ && cp -r prisma .next/standalone/"
+  },
+  "prisma": {
+    "seed": "npx tsx prisma/seed.ts"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.11.2",
