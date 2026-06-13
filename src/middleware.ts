@@ -6,8 +6,8 @@ export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // Routes that require authentication
-  const protectedRoutes = ["/veille", "/profil"];
-  const protectedApiRoutes = ["/api/veille"];
+  const protectedRoutes = ["/veille", "/profil", "/cours", "/qcm", "/examen-blanc", "/questions"];
+  const protectedApiRoutes = ["/api/veille", "/api/quiz-results", "/api/user"];
 
   const isProtectedRoute = protectedRoutes.some(route => pathname.startsWith(route));
   const isProtectedApiRoute = protectedApiRoutes.some(route => pathname.startsWith(route));
@@ -32,5 +32,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/veille/:path*", "/api/veille/:path*", "/profil/:path*"],
+  matcher: ["/veille/:path*", "/api/veille/:path*", "/api/quiz-results/:path*", "/api/user/:path*", "/profil/:path*", "/cours/:path*", "/qcm/:path*", "/examen-blanc/:path*", "/questions/:path*"],
 };
