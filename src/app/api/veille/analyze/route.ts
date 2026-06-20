@@ -2,9 +2,19 @@ import { NextRequest, NextResponse } from "next/server";
 import ZAI from "z-ai-web-dev-sdk";
 import { db } from "@/lib/db";
 import { requireAdmin } from "@/lib/auth-middleware";
+import {
+  EXAM_THEMES,
+  THEME_LABELS,
+  extractJsonFromString,
+  isValidCuid,
+  isValidThemeId,
+  logVeilleAction,
+} from "@/lib/veille";
 
-
-// Analyse IA d'un changement juridique spécifique et génération de questions
+/**
+ * POST /api/veille/analyze
+ * Analyse IA d'un changement juridique spécifique et génération de questions QCM.
+ */
 export async function POST(req: NextRequest) {
   const { error: authError } = await requireAdmin(req);
   if (authError) return authError;
@@ -23,27 +33,21 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Validate legalUpdateId format (cuid)
-    if (typeof legalUpdateId !== 'string' || !legalUpdateId.startsWith('c') || legalUpdateId.length > 30) {
+    if (!isValidCuid(legalUpdateId)) {
       return NextResponse.json(
         { status: "error", message: "legalUpdateId invalide" },
         { status: 400 }
       );
     }
 
-    // Validate themeId against allowed values
-    const validThemeIds = ["principes-valeurs", "droits-devoirs", "histoire-geographie", "systeme-institutionnel", "vivre-societe"];
-    if (!validThemeIds.includes(themeId)) {
+    if (!isValidThemeId(themeId)) {
       return NextResponse.json(
         { status: "error", message: "themeId invalide" },
         { status: 400 }
       );
     }
 
-    const legalUpdate = await db.legalUpdate.findUnique({
-      where: { id: legalUpdateId }
-    });
-
+    const legalUpdate = await db.legalUpdate.findUnique({ where: { id: legalUpdateId } });
     if (!legalUpdate) {
       return NextResponse.json(
         { status: "error", message: "Changement juridique non trouvé" },
@@ -51,18 +55,9 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const themeNames: Record<string, string> = {
-      "principes-valeurs": "Principes et valeurs de la République",
-      "droits-devoirs": "Droits et devoirs",
-      "histoire-geographie": "Histoire, géographie et culture",
-      "systeme-institutionnel": "Système institutionnel",
-      "vivre-societe": "Vivre en société",
-    };
-
-    // Générer des questions à partir du changement
     const prompt = `Tu es un expert en préparation à l'examen civique français. Génère des questions QCM basées sur ce changement juridique récent.
 
-THÉMATIQUE : ${themeNames[themeId] || themeId}
+THÉMATIQUE : ${THEME_LABELS[themeId] || themeId}
 
 CHANGEMENT JURIDIQUE :
 Titre : ${legalUpdate.title}
@@ -100,27 +95,16 @@ Réponds en JSON uniquement :
     const completion = await zai.chat.completions.create({
       messages: [
         { role: "system", content: "Tu es un expert juridique français spécialisé dans l'examen civique. Tu réponds uniquement en JSON valide." },
-        { role: "user", content: prompt }
+        { role: "user", content: prompt },
       ],
       temperature: 0.3,
     });
 
-    const aiResponse = completion.choices[0]?.message?.content || '{"questions":[],"analysis":""}';
-    
-    let parsed: { questions: Array<{
-      text: string;
-      options: string[];
-      correctAnswer: number;
-      explanation: string;
-      type: string;
-    }>; analysis: string };
-    
-    try {
-      const jsonMatch = aiResponse.match(/\{[\s\S]*\}/);
-      parsed = jsonMatch ? JSON.parse(jsonMatch[0]) : { questions: [], analysis: "" };
-    } catch {
-      parsed = { questions: [], analysis: "" };
-    }
+    const aiResponse = completion.choices[0]?.message?.content || "{}";
+    const parsed = extractJsonFromString<{
+      questions: Array<{ text: string; options: string[]; correctAnswer: number; explanation: string; type: string }>;
+      analysis: string;
+    }>(aiResponse, { questions: [], analysis: "" });
 
     // Sauvegarder les suggestions
     let savedCount = 0;
@@ -133,31 +117,27 @@ Réponds en JSON uniquement :
           suggestedData: JSON.stringify(question),
           reason: `Basé sur: ${legalUpdate.title} - ${parsed.analysis}`,
           status: "pending",
-        }
+        },
       });
       savedCount++;
     }
 
-    // Mettre à jour le statut du changement
     await db.legalUpdate.update({
       where: { id: legalUpdateId },
       data: {
         status: "analyzed",
         aiAnalysis: parsed.analysis,
         analyzedAt: new Date(),
-      }
+      },
     });
 
-    // Log
     const duration = Date.now() - startTime;
-    await db.veilleLog.create({
-      data: {
-        action: "analyze",
-        status: "completed",
-        details: `Analyse de "${legalUpdate.title}": ${savedCount} questions générées`,
-        resultsCount: savedCount,
-        duration,
-      }
+    await logVeilleAction({
+      action: "analyze",
+      status: "completed",
+      details: `Analyse de "${legalUpdate.title}": ${savedCount} questions générées`,
+      resultsCount: savedCount,
+      duration,
     });
 
     return NextResponse.json({
@@ -167,14 +147,15 @@ Réponds en JSON uniquement :
       questions: parsed.questions,
       duration,
     });
-
   } catch (error: unknown) {
     const errorMessage = error instanceof Error ? error.message : "Erreur inconnue";
     console.error("Veille analyze error:", errorMessage);
-    
     return NextResponse.json(
       { status: "error", message: "Erreur interne du serveur" },
       { status: 500 }
     );
   }
 }
+
+// Export des constantes pour réutilisation éventuelle
+export { EXAM_THEMES };

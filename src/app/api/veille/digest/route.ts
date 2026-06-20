@@ -3,6 +3,7 @@ import ZAI from "z-ai-web-dev-sdk";
 import { db } from "@/lib/db";
 import { requireAdmin } from "@/lib/auth-middleware";
 import { NextRequest } from "next/server";
+import { extractJsonFromString } from "@/lib/veille";
 
 /**
  * GET /api/veille/digest
@@ -98,12 +99,17 @@ Réponds en JSON : { "executiveSummary": "...", "criticalChanges": ["..."], "act
       temperature: 0.3,
     });
 
-    let aiDigest = { executiveSummary: "", criticalChanges: [] as string[], actionsRequired: [] as string[], trends: [] as string[] };
-    try {
-      const raw = completion.choices[0]?.message?.content || '{}';
-      const jsonMatch = raw.match(/\{[\s\S]*\}/);
-      if (jsonMatch) aiDigest = JSON.parse(jsonMatch[0]);
-    } catch { /* use defaults */ }
+    const aiDigest = extractJsonFromString<{
+      executiveSummary: string;
+      criticalChanges: string[];
+      actionsRequired: string[];
+      trends: string[];
+    }>(completion.choices[0]?.message?.content || "{}", {
+      executiveSummary: "",
+      criticalChanges: [],
+      actionsRequired: [],
+      trends: [],
+    });
 
     // Calculer le score de pertinence
     const relevanceScore = allUpdates.length > 0

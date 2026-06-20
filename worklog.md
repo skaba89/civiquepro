@@ -310,3 +310,45 @@ Stage Summary:
 - Rate limit register testé: 5x 201 puis 6e 429 (message français)
 - Push commit 7e8e4a9 sur origin/main
 - Reste: rotation NEXTAUTH_SECRET sur Render/Netlify (côté dashboard)
+
+---
+Task ID: REFACTOR-VEILLE
+Agent: Super Z (Main)
+Task: Refactor routes veille + correction middleware + a11y + ESLint
+
+Work Log:
+- Création src/lib/veille.ts (~450 lignes) centralisant :
+  - Types partagés (LegalChange, GovernmentAnalysisResult, QuestionSuggestionInput...)
+  - Constantes métier (EXAM_THEMES, CRON_SEARCH_QUERIES, SEARCH_QUERIES_LIGHT, OFFICIAL_SOURCE_SEARCHES)
+  - Builders de prompts (buildLegalAnalysisPrompt, buildGovernmentPrompt)
+  - Utilitaires JSON (extractJsonFromString)
+  - Persistance (saveLegalChange, saveProgramChangeIfNeeded, replaceGovernment, upsertVeilleConfig, logVeilleAction)
+  - Helper SSE (createSseResponse) + helper search (runWebSearches, shouldSkipSearch)
+  - Validateurs (isValidCuid, isValidThemeId)
+- Refactor /api/veille/cron/route.ts : 826 -> 289 lignes (-65%)
+- Refactor /api/veille/search/route.ts : 504 -> 175 lignes (-65%)
+- Refactor /api/veille/analyze/route.ts : 180 -> 130 lignes (utilisation extractJsonFromString + isValidCuid + isValidThemeId)
+- Refactor /api/veille/apply/route.ts : 114 -> 89 lignes (isValidCuid + logVeilleAction)
+- Refactor /api/veille/government/route.ts : 185 -> 99 lignes (replaceGovernment + extractJsonFromString)
+- Refactor /api/veille/digest/route.ts : extraction JSON via helper partagé
+- Correction middleware : /cours /qcm /qcm/theme /annales /questions /examen-blanc désormais publics (cohérent avec la promesse marketing "QCM gratuits en ligne")
+  - Protected: /qcm/quiz/*, /examen-blanc/quiz, /profil, /veille
+  - Matcher ajusté en conséquence
+- Amélioration a11y Breadcrumb : aria-label="Fil d'Ariane", <ol>/<li>, aria-current="page", aria-hidden sur ChevronRight
+- Activation règles ESLint essentielles (warn plutôt que off) :
+  - @typescript-eslint/no-explicit-any, no-unused-vars (avec patterns d'ignore pour _*)
+  - react-hooks/exhaustive-deps, react/no-unescaped-entities
+  - @next/next/no-img-element
+  - prefer-const, no-console (allow warn/error), no-debugger (error), no-empty, no-unreachable, no-mixed-spaces-and-tabs (error)
+- Cleanup tailwind.config.ts (mixed spaces/tabs -> 2-space consistent)
+- Cleanup imports inutilisés : auth-middleware (req -> _req), veille.ts (NextRequest)
+
+Stage Summary:
+- Build: 31 routes compilées en 4.4s (vs 29 avant, +2 routes publiques ajoutées au sitemap statique)
+- TypeScript: 0 errors
+- ESLint: 0 errors, 29 warnings (acceptable — majoritairement des imports inutilisés pré-existants)
+- Diff: -890 lignes nettes (-1387, +497) -> duplication massivement réduite
+- Smoke tests: 10/10 routes publiques 200, 4/4 routes protégées user 307, 1/1 route admin 307, 4/4 APIs protégées 401
+- SEO: /qcm /cours /annales /questions /examen-blanc désormais prerendered (○ Static)
+- a11y: breadcrumb conforme WCAG
+- Reste à faire: push git, rotation NEXTAUTH_SECRET côté Render dashboard

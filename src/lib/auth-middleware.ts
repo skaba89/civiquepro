@@ -6,7 +6,7 @@ import { NextRequest, NextResponse } from "next/server";
  * Check if the current request is from an authenticated user.
  * Returns the session if authenticated, or a 401 response if not.
  */
-export async function requireAuth(req: NextRequest) {
+export async function requireAuth(_req: NextRequest) {
   const session = await getServerSession(authOptions);
 
   if (!session?.user?.email) {
