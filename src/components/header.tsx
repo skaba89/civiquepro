@@ -5,7 +5,6 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { NAV_ITEMS } from "@/lib/constants";
 import { useAuth } from "@/components/auth-provider";
-import { Button } from "@/components/ui/button";
 import { Menu, X, LogOut, User as UserIcon, Shield } from "lucide-react";
 
 export function Header() {
@@ -29,7 +28,7 @@ export function Header() {
   const isAdmin = (user as { role?: string })?.role === "admin";
   const visibleNavItems = NAV_ITEMS.filter(item => {
     if (item.id === "veille") return isAuthenticated && isAdmin;
-    if (["cours", "qcm", "examen-blanc", "questions"].includes(item.id)) return isAuthenticated;
+    // Les autres pages (/cours, /qcm, /examen-blanc, /questions, /annales) sont publiques
     return true;
   });
 
@@ -66,9 +65,13 @@ export function Header() {
               <div className="relative" data-user-menu>
                 <button
                   onClick={() => setShowUserMenu(!showUserMenu)}
+                  aria-label="Menu du compte utilisateur"
+                  aria-expanded={showUserMenu}
+                  aria-haspopup="menu"
                   className="flex items-center gap-2 px-3 py-1.5 rounded-xl hover:bg-gray-50 transition-colors"
                 >
                   {user.image ? (
+                    // eslint-disable-next-line @next/next/no-img-element
                     <img src={user.image} alt={user.name || ""} className="w-8 h-8 rounded-full border-2 border-violet-200" />
                   ) : (
                     <div className="w-8 h-8 rounded-full bg-gradient-to-br from-violet-600 to-orange-400 flex items-center justify-center">
@@ -121,12 +124,18 @@ export function Header() {
             {!isAuthenticated && (
               <Link
                 href="/login"
+                aria-label="Se connecter"
                 className="sm:hidden p-2 text-violet-600 hover:text-violet-700"
               >
                 <UserIcon className="w-5 h-5" />
               </Link>
             )}
-            <button className="lg:hidden p-2 text-gray-600 hover:text-gray-900" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
+            <button
+              className="lg:hidden p-2 text-gray-600 hover:text-gray-900"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              aria-label={mobileMenuOpen ? "Fermer le menu" : "Ouvrir le menu"}
+              aria-expanded={mobileMenuOpen}
+            >
               {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>
           </div>

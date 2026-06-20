@@ -13,6 +13,7 @@
  *   3. Verifies the new password works
  *   4. Prints the admin email + confirmation
  */
+/* eslint-disable no-console */
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import * as readline from "readline";

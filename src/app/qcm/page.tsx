@@ -10,8 +10,8 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import {
-  ChevronRight, Clock, CheckCircle2, XCircle,
-  FileText, Play, Lightbulb, Trophy,
+  ChevronRight, Clock, CheckCircle2,
+  Play, Lightbulb, Trophy,
 } from "lucide-react";
 
 export default function QCMPage() {

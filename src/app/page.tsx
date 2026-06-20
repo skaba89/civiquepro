@@ -8,9 +8,9 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import {
-  Clock, CheckCircle2, XCircle,
+  Clock, CheckCircle2,
   FileText, ArrowRight,
-  Timer, Trophy, Lightbulb,
+  Timer,
 } from "lucide-react";
 
 export default function HomePage() {

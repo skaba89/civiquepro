@@ -4,7 +4,6 @@ import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "@/components/auth-provider";
-import { Breadcrumb } from "@/components/breadcrumb";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -204,6 +203,7 @@ export function ProfileContent() {
       <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6 mb-8">
         <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-violet-600 to-orange-400 flex items-center justify-center shrink-0">
           {user.image ? (
+            // eslint-disable-next-line @next/next/no-img-element
             <img src={user.image} alt={user.name || ""} className="w-20 h-20 rounded-2xl object-cover" />
           ) : (
             <span className="text-white font-bold text-2xl">

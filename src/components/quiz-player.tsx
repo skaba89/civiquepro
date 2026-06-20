@@ -11,7 +11,7 @@ import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
 import {
   ChevronRight, ChevronLeft, Clock, CheckCircle2, XCircle,
-  Trophy, Lightbulb, Play, RotateCcw,
+  Trophy, Lightbulb, RotateCcw,
 } from "lucide-react";
 
 interface QuizPlayerProps {
@@ -24,7 +24,7 @@ interface QuizPlayerProps {
   isExamBlanc?: boolean;
 }
 
-export function QuizPlayer({ questions, title, onBack, themeId, serieId, quizType, isExamBlanc = false }: QuizPlayerProps) {
+export function QuizPlayer({ questions, title: _title, onBack, themeId, serieId, quizType, isExamBlanc = false }: QuizPlayerProps) {
   const { data: session } = useSession();
   const [currentIdx, setCurrentIdx] = useState(0);
   const [answers, setAnswers] = useState<(number | null)[]>(() => new Array(questions.length).fill(null));
@@ -54,7 +54,7 @@ export function QuizPlayer({ questions, title, onBack, themeId, serieId, quizTyp
     return () => { if (timerRef.current) clearInterval(timerRef.current); };
   }, []);
 
-  // Save result when quiz is finished
+  // Save result when quiz is finished (one-shot via ref guard; deps intentional)
   React.useEffect(() => {
     if (isFinished && !hasSavedRef.current && session?.user) {
       hasSavedRef.current = true;
@@ -80,6 +80,7 @@ export function QuizPlayer({ questions, title, onBack, themeId, serieId, quizTyp
         if (!res.ok) console.error("Erreur sauvegarde résultat: HTTP", res.status);
       }).catch(err => console.error("Erreur sauvegarde résultat:", err));
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isFinished]);
 
   const formatTime = (s: number) => `${Math.floor(s / 60).toString().padStart(2, "0")}:${(s % 60).toString().padStart(2, "0")}`;

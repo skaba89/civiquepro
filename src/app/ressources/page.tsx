@@ -3,7 +3,6 @@
 import React from "react";
 import { resources } from "@/lib/qcm-data";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { ArrowRight } from "lucide-react";
 
 export default function RessourcesPage() {
   const categories = [...new Set(resources.map(r => r.category))];

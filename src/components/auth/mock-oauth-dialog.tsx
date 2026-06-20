@@ -23,8 +23,6 @@ export function MockOAuthDialog({ provider, isOpen, onClose }: MockOAuthDialogPr
 
   if (!isOpen) return null;
 
-  const providerLabel = provider === "google" ? "Google" : "Facebook";
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");

@@ -352,3 +352,43 @@ Stage Summary:
 - SEO: /qcm /cours /annales /questions /examen-blanc désormais prerendered (○ Static)
 - a11y: breadcrumb conforme WCAG
 - Reste à faire: push git, rotation NEXTAUTH_SECRET côté Render dashboard
+
+---
+Task ID: CLEANUP-FRONTEND
+Agent: Super Z (Main)
+Task: Nettoyage ESLint warnings + a11y + enrichissement contenu pages légères
+
+Work Log:
+- Cleanup imports inutilisés : page.tsx (XCircle/Trophy/Lightbulb), qcm/page.tsx (XCircle/FileText),
+  ressources/page.tsx (ArrowRight), profil/profile-content.tsx (Breadcrumb), auth-dialog.tsx (Card/CardContent),
+  mock-oauth-dialog.tsx (providerLabel), header.tsx (Button), quiz-player.tsx (Play + title renommé _title)
+- use-toast.ts : refacto pour inline le type Action et supprimer actionTypes inutilisé
+- prisma/seed.ts + scripts/rotate-admin-password.ts : eslint-disable no-console (scripts CLI)
+- profile-content.tsx + header.tsx : eslint-disable @next/next/no-img-element sur img OAuth avatars
+- quiz-player.tsx : eslint-disable react-hooks/exhaustive-deps sur save-result effect (déps intentionnels)
+- Footer : "EXAMEN CIVIQUE" -> "examen civique" (suppression ALL-CAPS)
+- Header a11y : ajout aria-label/aria-expanded/aria-haspopup sur bouton menu user + bouton hamburger
+  + aria-label "Se connecter" sur lien mobile UserIcon seul
+- Header : suppression filtre nav bloquant /cours /qcm /examen-blanc /questions pour non-connectés
+  (cohérent avec le nouveau middleware qui rend ces pages publiques)
+- Enrichissement /examen-blanc (63 -> 158 lignes, ~740 mots) :
+  + 3ème paragraphe explicatif (entraînement 15j avant OFII)
+  + Card "Conseils pour réussir" (3 conseils détaillés)
+  + Card "Que se passe-t-il après l'examen ?" (attestation 5 ans, replay)
+- Enrichissement /annales (35 -> 158 lignes, ~755 mots) :
+  + Données structurées par session (difficulté, topics, durée)
+  + Card "Comment utiliser les annales efficacement" (3 paragraphes)
+  + Card "Important à savoir" (reconstitutions fidèles + veille IA + sources officielles)
+  + CTA final vers examen-blanc
+- Enrichissement /cours (46 -> 164 lignes, ~914 mots) :
+  + Card "Méthodologie de révision recommandée" (3 étapes détaillées)
+  + Card "Combien de temps prévoir ?" (4-6 sem / 8-12 sem / espacement)
+  + Section "Les 5 thématiques officielles" (grille cliquable)
+
+Stage Summary:
+- ESLint: 0 errors, 0 warnings (vs 29 warnings avant)
+- TypeScript: 0 errors
+- Build: 31 routes compilées en 4.5s
+- Contenu: 3 pages passent de ~100 mots à 700-900 mots chacune (SEO + expérience utilisateur)
+- a11y: header complet (aria-labels + aria-expanded + aria-haspopup), breadcrumb conforme
+- Cohérence: header n'affiche plus que /veille comme route restreinte

@@ -44,7 +44,7 @@ export function Footer() {
         <Separator className="my-8 bg-gray-800" />
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-xs text-gray-500">&copy; 2026 CiviquePro. Tous droits réservés.</p>
-          <span className="text-xs text-gray-500">Contenu mis à jour pour l&apos;EXAMEN CIVIQUE de 2026</span>
+          <span className="text-xs text-gray-500">Contenu mis à jour pour l&apos;examen civique 2026</span>
         </div>
       </div>
     </footer>
