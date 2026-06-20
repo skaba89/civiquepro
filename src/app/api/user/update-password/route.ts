@@ -1,16 +1,34 @@
-import { NextResponse } from "next/server";
+import { NextResponse, NextRequest } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { db } from "@/lib/db";
 import bcrypt from "bcryptjs";
 import { safeParseJSON } from "@/lib/sanitize";
+import { rateLimit, getClientIp } from "@/lib/rate-limit";
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
 
     if (!session?.user?.email) {
       return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
+    }
+
+    // Rate limit: 5 password changes per user per hour (mitigate brute-force on current password)
+    const ip = getClientIp(request);
+    const rl = rateLimit({
+      key: `pwd-change:${session.user.email}:${ip}`,
+      limit: 5,
+      windowMs: 60 * 60 * 1000,
+    });
+    if (!rl.success) {
+      return NextResponse.json(
+        { error: "Trop de tentatives. Réessayez plus tard." },
+        {
+          status: 429,
+          headers: { "Retry-After": String(Math.ceil(rl.retryAfter / 1000)) },
+        }
+      );
     }
 
     const { data, error: parseError } = await safeParseJSON(request);
@@ -95,6 +113,6 @@ export async function POST(request: Request) {
 }
 
 // Also support PUT method (API contract compliance)
-export async function PUT(request: Request) {
+export async function PUT(request: NextRequest) {
   return POST(request);
 }

@@ -1,4 +1,5 @@
 import type { NextAuthOptions } from "next-auth";
+import type { NextRequest } from "next/server";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
 import FacebookProvider from "next-auth/providers/facebook";
@@ -6,6 +7,7 @@ import { PrismaAdapter } from "@auth/prisma-adapter";
 import bcrypt from "bcryptjs";
 import { db } from "@/lib/db";
 import { sanitizeName } from "@/lib/sanitize";
+import { rateLimit } from "@/lib/rate-limit";
 
 const isProduction = process.env.NODE_ENV === "production";
 
@@ -78,12 +80,31 @@ providers.push(
       email: { label: "Email", type: "email" },
       password: { label: "Mot de passe", type: "password" },
     },
-    async authorize(credentials) {
+    async authorize(credentials, req) {
       if (!credentials?.email || !credentials?.password) {
         return null;
       }
 
       const email = credentials.email.toLowerCase().trim();
+
+      // Rate limit login attempts per email + IP to mitigate brute-force.
+      // NextAuth v4 doesn't expose the raw Request here, but headers are
+      // available on the req object. Falls back to "unknown" IP if missing.
+      const forwarded = (req as NextRequest | undefined)?.headers?.["x-forwarded-for"]
+        || (req as NextRequest | undefined)?.headers?.["x-real-ip"];
+      const ip = (typeof forwarded === "string" ? forwarded.split(",")[0] : "unknown").trim();
+
+      const rl = rateLimit({
+        key: `login:${email}:${ip}`,
+        limit: 10,           // 10 attempts per minute
+        windowMs: 60 * 1000,
+      });
+      if (!rl.success) {
+        // Returning null triggers NextAuth's "CredentialsSignin" error.
+        // The user sees "Email ou mot de passe incorrect" — same as a failed
+        // login, which avoids leaking that the rate limit was hit.
+        return null;
+      }
 
       const user = await db.user.findUnique({
         where: { email },

@@ -37,6 +37,7 @@ export const metadata: Metadata = {
   ],
   authors: [{ name: "CiviquePro" }],
   creator: "CiviquePro",
+  manifest: "/manifest.json",
   openGraph: {
     type: "website",
     locale: "fr_FR",

@@ -2,9 +2,23 @@ import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { db } from "@/lib/db";
 import { sanitizeName, sanitizeEmail, safeParseJSON } from "@/lib/sanitize";
+import { rateLimit, getClientIp } from "@/lib/rate-limit";
 
 export async function POST(req: NextRequest) {
   try {
+    // Rate limit: 5 registrations per IP per hour
+    const ip = getClientIp(req);
+    const rl = rateLimit({ key: `register:${ip}`, limit: 5, windowMs: 60 * 60 * 1000 });
+    if (!rl.success) {
+      return NextResponse.json(
+        { error: "Trop de comptes créés depuis cette adresse. Réessayez plus tard." },
+        {
+          status: 429,
+          headers: { "Retry-After": String(Math.ceil(rl.retryAfter / 1000)) },
+        }
+      );
+    }
+
     const { data, error: parseError } = await safeParseJSON(req);
     if (parseError || !data) {
       return NextResponse.json({ error: parseError }, { status: 400 });

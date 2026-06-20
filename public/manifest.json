@@ -1,0 +1,20 @@
+{
+  "name": "CiviquePro",
+  "short_name": "CiviquePro",
+  "description": "Préparation à l'examen civique 2026 — QCM, cours, annales et veille juridique.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#7c3aed",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["education", "government"],
+  "lang": "fr",
+  "dir": "ltr"
+}
