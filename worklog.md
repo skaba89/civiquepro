@@ -280,3 +280,33 @@ Stage Summary:
 - 29 routes générées, 4 migrations Neon appliquées
 - Verdict: PRODUCTION-READY (sous réserve rotation secrets)
 - Reste à faire: push git + rotation NEXTAUTH_SECRET + changement mdp admin
+
+---
+Task ID: HARDENING
+Agent: Super Z (Main)
+Task: Prochaines étapes — rotation secrets, rate limiting, SEO, error boundaries
+
+Work Log:
+- Rotation NEXTAUTH_SECRET en dev (openssl rand -base64 32) + .env.example enrichi
+- Création script scripts/rotate-admin-password.ts (politique 8-128 + complexité)
+- Rotation mot de passe admin: ancien Admin@2026! -> nouveau CiviqueAdmin@2026!Secure
+- Création src/lib/rate-limit.ts (in-memory, auto cleanup 5min, unref interval)
+- Rate limit /api/auth/register: 5/IP/heure
+- Rate limit /api/auth/callback/credentials (via authorize callback): 10/email+IP/min
+- Rate limit /api/user/update-password: 5/user/heure
+- Création src/app/error.tsx (root error boundary avec retry)
+- Création src/app/loading.tsx (root loading state accessible)
+- Création src/app/robots.ts (dynamic, avec sitemap reference)
+- Création src/app/sitemap.ts (4 pages publiques)
+- Création public/manifest.json (PWA: theme #7c3aed, icons)
+- Suppression public/robots.txt (remplacé par robots.ts)
+- Link manifest dans layout metadata
+
+Stage Summary:
+- Build: 29 routes (incl. /robots.txt + /sitemap.xml) compiled in 4.5s
+- TypeScript: 0 errors
+- ESLint: 0 errors 0 warnings
+- Login avec nouveau mdp admin: 200 OK + session expose role+createdAt
+- Rate limit register testé: 5x 201 puis 6e 429 (message français)
+- Push commit 7e8e4a9 sur origin/main
+- Reste: rotation NEXTAUTH_SECRET sur Render/Netlify (côté dashboard)
