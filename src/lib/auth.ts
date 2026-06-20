@@ -5,6 +5,7 @@ import FacebookProvider from "next-auth/providers/facebook";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import bcrypt from "bcryptjs";
 import { db } from "@/lib/db";
+import { sanitizeName } from "@/lib/sanitize";
 
 const isProduction = process.env.NODE_ENV === "production";
 
@@ -200,6 +201,8 @@ export const authOptions: NextAuthOptions = {
   providers,
   session: {
     strategy: "jwt",
+    // Keep sessions reasonably short for a civic-exam prep site (7 days)
+    maxAge: 7 * 24 * 60 * 60,
   },
   pages: {
     signIn: "/login",
@@ -207,6 +210,45 @@ export const authOptions: NextAuthOptions = {
   },
   secret: process.env.NEXTAUTH_SECRET,
   debug: !isProduction,
+  cookies: {
+    // Force Secure flag on auth cookies when running over HTTPS in production.
+    // SameSite=Lax is preserved (default) so the cookie still travels on top-level GETs.
+    // __Secure- / __Host- prefixes only apply in production (HTTPS) — in dev (HTTP)
+    // they would conflict with Secure=false and break auth.
+    sessionToken: {
+      name: isProduction
+        ? `__Secure-next-auth.session-token`
+        : `next-auth.session-token`,
+      options: {
+        httpOnly: true,
+        sameSite: "lax",
+        path: "/",
+        secure: isProduction,
+      },
+    },
+    callbackUrl: {
+      name: isProduction
+        ? `__Secure-next-auth.callback-url`
+        : `next-auth.callback-url`,
+      options: {
+        httpOnly: true,
+        sameSite: "lax",
+        path: "/",
+        secure: isProduction,
+      },
+    },
+    csrfToken: {
+      name: isProduction
+        ? `__Host-next-auth.csrf-token`
+        : `next-auth.csrf-token`,
+      options: {
+        httpOnly: true,
+        sameSite: "lax",
+        path: "/",
+        secure: isProduction,
+      },
+    },
+  },
   callbacks: {
     async jwt({ token, user, account, trigger }) {
       if (user) {
@@ -215,11 +257,15 @@ export const authOptions: NextAuthOptions = {
         token.email = user.email;
         token.picture = user.image;
         token.role = (user as { role?: string }).role || "user";
+        // Persist createdAt so /profil can show "Membre depuis" without extra DB hit
+        if ((user as { createdAt?: Date | string }).createdAt) {
+          token.createdAt = new Date((user as { createdAt?: Date | string }).createdAt!).toISOString();
+        }
       }
       if (account) {
         token.provider = account.provider;
       }
-      // Always refresh role from DB on token update
+      // Always refresh role + createdAt from DB on token update
       if (trigger === "update" && token.email) {
         const dbUser = await db.user.findUnique({
           where: { email: token.email },
@@ -228,15 +274,17 @@ export const authOptions: NextAuthOptions = {
           token.name = dbUser.name;
           token.picture = dbUser.image;
           token.role = dbUser.role;
+          token.createdAt = dbUser.createdAt.toISOString();
         }
       }
-      // Ensure role is always populated (first login via OAuth may not have it)
-      if (!token.role && token.email) {
+      // Ensure role + createdAt are always populated (first login via OAuth may not have them)
+      if ((!token.role || !token.createdAt) && token.email) {
         const dbUser = await db.user.findUnique({
           where: { email: token.email as string },
         });
         if (dbUser) {
           token.role = dbUser.role;
+          token.createdAt = dbUser.createdAt.toISOString();
         }
       }
       return token;
@@ -248,6 +296,7 @@ export const authOptions: NextAuthOptions = {
         session.user.email = token.email as string;
         session.user.image = token.picture as string || null;
         (session.user as { role?: string }).role = token.role as string || "user";
+        (session.user as { createdAt?: string }).createdAt = token.createdAt as string | undefined;
       }
       return session;
     },
@@ -255,6 +304,8 @@ export const authOptions: NextAuthOptions = {
       // For real Google OAuth
       if (account?.provider === "google" && profile?.email) {
         try {
+          // Sanitize profile.name to prevent stored XSS via OAuth
+          const safeName = sanitizeName(profile.name) || profile.email.split("@")[0];
           const existingUser = await db.user.findUnique({
             where: { email: profile.email },
           });
@@ -262,7 +313,7 @@ export const authOptions: NextAuthOptions = {
             const newUser = await db.user.create({
               data: {
                 email: profile.email,
-                name: profile.name || profile.email.split("@")[0],
+                name: safeName,
                 image: (profile as Record<string, unknown>).picture as string || null,
                 emailVerified: new Date(),
               },
@@ -279,6 +330,8 @@ export const authOptions: NextAuthOptions = {
       // For real Facebook OAuth
       if (account?.provider === "facebook" && profile?.email) {
         try {
+          // Sanitize profile.name to prevent stored XSS via OAuth
+          const safeName = sanitizeName(profile.name) || profile.email.split("@")[0];
           const existingUser = await db.user.findUnique({
             where: { email: profile.email },
           });
@@ -286,7 +339,7 @@ export const authOptions: NextAuthOptions = {
             const newUser = await db.user.create({
               data: {
                 email: profile.email,
-                name: profile.name || profile.email.split("@")[0],
+                name: safeName,
                 image: (profile as Record<string, unknown>).picture as string || null,
                 emailVerified: new Date(),
               },

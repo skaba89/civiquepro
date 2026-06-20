@@ -18,9 +18,49 @@ const openSans = Open_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "CiviquePro - QCM Examen Civique 2026",
-  description: "Entraînez-vous sur nos QCM examen civique 100% conformes au programme 2026. 40 questions, 5 thématiques, 45 minutes chrono. Réussissez votre examen civique du premier coup.",
-  keywords: ["examen civique", "QCM", "préparation", "titre de séjour", "France", "république", "laïcité"],
+  metadataBase: new URL(process.env.NEXTAUTH_URL || "http://localhost:3000"),
+  title: {
+    default: "CiviquePro - QCM Examen Civique 2026",
+    template: "%s · CiviquePro",
+  },
+  description:
+    "Entraînez-vous sur nos QCM examen civique 100% conformes au programme 2026. 40 questions, 5 thématiques, 45 minutes chrono. Réussissez votre examen civique du premier coup.",
+  keywords: [
+    "examen civique",
+    "QCM",
+    "préparation",
+    "titre de séjour",
+    "France",
+    "république",
+    "laïcité",
+    "naturalisation",
+  ],
+  authors: [{ name: "CiviquePro" }],
+  creator: "CiviquePro",
+  openGraph: {
+    type: "website",
+    locale: "fr_FR",
+    url: "/",
+    siteName: "CiviquePro",
+    title: "CiviquePro - QCM Examen Civique 2026",
+    description:
+      "Entraînez-vous sur nos QCM examen civique 100% conformes au programme 2026. 40 questions, 5 thématiques, 45 minutes chrono.",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "CiviquePro - QCM Examen Civique 2026",
+    description:
+      "Entraînez-vous sur nos QCM examen civique 100% conformes au programme 2026.",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+    },
+  },
 };
 
 export default function RootLayout({

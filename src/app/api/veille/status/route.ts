@@ -1,12 +1,12 @@
 import { NextResponse } from "next/server";
 import { NextRequest } from "next/server";
 import { db } from "@/lib/db";
-import { requireAuth } from "@/lib/auth-middleware";
+import { requireAdmin } from "@/lib/auth-middleware";
 
 
 // Statut de la veille IA
 export async function GET(req: NextRequest) {
-  const { error: authError } = await requireAuth(req);
+  const { error: authError } = await requireAdmin(req);
   if (authError) return authError;
 
   try {

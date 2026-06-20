@@ -1,8 +1,14 @@
-"use client";
-
+import type { Metadata } from "next";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Home, ArrowLeft } from "lucide-react";
+import { Home } from "lucide-react";
+import { BackButton } from "./not-found-back-button";
+
+export const metadata: Metadata = {
+  title: "Page introuvable (404)",
+  description: "La page que vous recherchez n'existe pas ou a été déplacée.",
+  robots: { index: false, follow: true },
+};
 
 export default function NotFound() {
   return (
@@ -22,14 +28,7 @@ export default function NotFound() {
             Retour à l&apos;accueil
           </Button>
         </Link>
-        <Button
-          variant="outline"
-          onClick={() => window.history.back()}
-          className="font-semibold"
-        >
-          <ArrowLeft className="w-4 h-4 mr-2" />
-          Page précédente
-        </Button>
+        <BackButton />
       </div>
     </div>
   );

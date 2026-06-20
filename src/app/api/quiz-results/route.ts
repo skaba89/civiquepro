@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { db } from "@/lib/db";
-import { safeParseJSON } from "@/lib/sanitize";
+import { safeParseJSON, sanitizeText } from "@/lib/sanitize";
 
 export async function GET() {
   try {
@@ -116,18 +116,44 @@ export async function POST(request: NextRequest) {
     // Cap timeUsed at reasonable maximum (8 hours = 28800 seconds)
     const cappedTime = Math.min(numTime, 28800);
 
+    // Sanitize free-text identifiers (themeId, serieId) — reject HTML tags
+    // These come from the client and could carry stored-XSS payloads
+    const sanitizeId = (value: unknown): string | null => {
+      if (value === null || value === undefined) return null;
+      if (typeof value !== "string") return null;
+      // Reject HTML tags outright — do not silently strip
+      if (/<[^>]*>/.test(value)) return null;
+      const cleaned = sanitizeText(value);
+      if (!cleaned) return null;
+      if (cleaned.length > 100) return null; // Reasonable cap for an identifier
+      return cleaned;
+    };
+
+    const safeThemeId = sanitizeId(themeId);
+    const safeSerieId = sanitizeId(serieId);
+
+    // answers is stored as JSON string — validate length to avoid abuse
+    let answersJson: string;
+    if (typeof answers === "string") {
+      answersJson = answers.slice(0, 65000); // Cap to ~64KB
+    } else if (answers && typeof answers === "object") {
+      answersJson = JSON.stringify(answers).slice(0, 65000);
+    } else {
+      answersJson = JSON.stringify({});
+    }
+
     const result = await db.quizResult.create({
       data: {
         userId: user.id,
         quizType: quizType as string,
-        themeId: (themeId as string) || null,
-        serieId: (serieId as string) || null,
+        themeId: safeThemeId,
+        serieId: safeSerieId,
         totalQuestions: numTotal,
         correctAnswers: numCorrect,
         score: numScore,
         passed: passed as boolean,
         timeUsed: cappedTime,
-        answers: typeof answers === "string" ? answers : JSON.stringify(answers || {}),
+        answers: answersJson,
       },
     });
 

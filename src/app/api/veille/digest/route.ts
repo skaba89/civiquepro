@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import ZAI from "z-ai-web-dev-sdk";
 import { db } from "@/lib/db";
-import { requireAuth } from "@/lib/auth-middleware";
+import { requireAdmin } from "@/lib/auth-middleware";
 import { NextRequest } from "next/server";
 
 /**
@@ -13,7 +13,7 @@ import { NextRequest } from "next/server";
  * - Recommandations d'action
  */
 export async function GET(req: NextRequest) {
-  const { error: authError } = await requireAuth(req);
+  const { error: authError } = await requireAdmin(req);
   if (authError) return authError;
 
   try {

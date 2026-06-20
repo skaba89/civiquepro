@@ -107,6 +107,7 @@ model QuizResult {
   updatedAt     DateTime @updatedAt
 
   @@index([userId])
+  @@index([userId, completedAt]) // Composite index for "user history ORDER BY completedAt DESC"
   @@index([quizType])
 }
 

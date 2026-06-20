@@ -8,6 +8,7 @@ declare module "next-auth" {
       email?: string | null;
       image?: string | null;
       role: string; // "user" | "admin"
+      createdAt?: string; // ISO timestamp — used by /profil "Membre depuis"
     } & DefaultSession["user"];
   }
 
@@ -17,6 +18,7 @@ declare module "next-auth" {
     email?: string | null;
     image?: string | null;
     role?: string; // "user" | "admin"
+    createdAt?: Date;
   }
 }
 
@@ -28,5 +30,6 @@ declare module "next-auth/jwt" {
     picture?: string | null;
     provider?: string;
     role?: string; // "user" | "admin"
+    createdAt?: string; // ISO timestamp
   }
 }

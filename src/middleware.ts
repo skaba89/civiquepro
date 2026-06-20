@@ -11,7 +11,7 @@ export async function middleware(request: NextRequest) {
 
   // Routes that require admin role
   const adminRoutes = ["/veille"];
-  const adminApiRoutes = ["/api/veille/cron", "/api/veille/search", "/api/veille/apply", "/api/veille/analyze", "/api/veille/government"];
+  const adminApiRoutes = ["/api/veille/cron", "/api/veille/search", "/api/veille/apply", "/api/veille/analyze", "/api/veille/government", "/api/veille/status", "/api/veille/digest"];
 
   const isProtectedRoute = protectedRoutes.some(route => pathname.startsWith(route));
   const isProtectedApiRoute = protectedApiRoutes.some(route => pathname.startsWith(route));

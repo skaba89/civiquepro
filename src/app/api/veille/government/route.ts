@@ -1,7 +1,7 @@
 import { NextResponse, NextRequest } from "next/server";
 import ZAI from "z-ai-web-dev-sdk";
 import { db } from "@/lib/db";
-import { requireAuth, requireAdmin } from "@/lib/auth-middleware";
+import { requireAdmin } from "@/lib/auth-middleware";
 
 
 // Mise à jour des membres du gouvernement via recherche web
@@ -160,7 +160,7 @@ Réponds en JSON uniquement :
 
 // GET: Récupérer les membres actuels du gouvernement
 export async function GET(req: NextRequest) {
-  const { error: authError } = await requireAuth(req);
+  const { error: authError } = await requireAdmin(req);
   if (authError) return authError;
 
   try {
